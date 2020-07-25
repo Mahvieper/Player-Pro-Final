@@ -105,8 +105,8 @@ class IndLearningLoading extends HomeState {}
 
 class IndLearningLoaded extends HomeState {
   final UserModel userModels;
-
-  IndLearningLoaded(this.userModels);
+  final List<IndividualLearningModel> indiLearnList;
+  IndLearningLoaded(this.userModels,this.indiLearnList);
   @override
   List<Object> get props => [userModels];
 }
@@ -190,6 +190,17 @@ class ContactUsError extends HomeState {
   String toString() => 'ContactUsError { error: $error }';
 }
 
+class ContactUsSuccess extends HomeState {
+  final String response;
+
+  const ContactUsSuccess({@required this.response});
+
+  @override
+  List<Object> get props => [response];
+
+  @override
+  String toString() => 'ContactUsSuccess { Response : $response }';
+}
 //--------------For Report Problem Section-------------------------------
 class ReportProbLoading extends HomeState {}
 
@@ -211,4 +222,16 @@ class ReportProbError extends HomeState {
 
   @override
   String toString() => 'ReportProbError { error: $error }';
+}
+
+class ReportProbSuccess extends HomeState {
+  final String response;
+
+  const ReportProbSuccess({@required this.response});
+
+  @override
+  List<Object> get props => [response];
+
+  @override
+  String toString() => 'ReportProbSuccess { Response : $response }';
 }

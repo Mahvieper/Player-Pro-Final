@@ -13,7 +13,7 @@ class ContactUsPage extends StatelessWidget {
   final UserModel userModel;
   final scaffoldKey = new GlobalKey<ScaffoldState>();
   final formKey = new GlobalKey<FormState>();
-  String _contactEmail,_message;
+  String _contactEmail,_message,_name;
   @override
   Widget build(BuildContext context) {
     Widget buildInputs(String title) {
@@ -59,6 +59,8 @@ class ContactUsPage extends StatelessWidget {
                       _contactEmail = val;
                     else if(title.contains("MESSAGE"))
                       _message = val;
+                    else if(title.contains("NAME"))
+                      _name = val;
                   },
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -82,95 +84,108 @@ class ContactUsPage extends StatelessWidget {
       child: SafeArea(
         child: Scaffold(
           key: scaffoldKey,
-          body: BlocBuilder<HomeBloc, HomeState>(
-            builder: (context, state) {
-              if (state is ContactUsLoading)
-                return LoadingIndicator();
-              else if (state is ContactUsLoaded) {
-                return WillPopScope(
-                  onWillPop: () {
-                    Navigator.pop(context);
-                  },
-                  child: Stack(
-                    children: [
-                      Container(
-                        decoration: new BoxDecoration(
-                          image: new DecorationImage(
-                            image: new AssetImage("assets/homeBack.png"),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-
-                      Align(
-                        alignment: Alignment.topLeft,
-                        child: IconButton(
-                          icon: Icon(Icons.arrow_back,color: Colors.white,),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                      ),
-
-                      Container(
-                        margin: EdgeInsets.only(
-                            top: MediaQuery.of(context).size.height * 0.15),
-                        height: MediaQuery.of(context).size.height * 0.8,
-                        padding: EdgeInsets.all(30),
-                        child: Form(
-                          key: formKey,
-                          child: ListView(
-                            children: [
-                              buildInputs("NAME"),
-                              buildInputs("E-MAIL"),
-                              buildInputs("MESSAGE"),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Align(
-                                child: SizedBox(
-                                  width: 250,
-                                  child: RaisedButton(
-                                    onPressed: () {
-                                      if (formKey.currentState.validate()) {
-                                        formKey.currentState.save();
-                                        print('Form is valid');
-                                        /* BlocProvider.of<LoginBloc>(context).add(
-                                          LoginButtonPressed(
-                                            username: _email,
-                                            password: _pass,
-                                          ),
-                                        );*/
-                                      } else {
-                                        print(formKey.currentState.validate());
-                                        print(formKey.currentState);
-                                        print('Form is Not valid');
-                                      }
-                                    },
-                                    child: Text(
-                                      "SEND",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: "MontserratRegular",
-                                          letterSpacing: 3),
-                                    ),
-                                    color: Color(0xFFbf2431),
-                                    disabledColor:
-                                        Color.fromARGB(191, 36, 49, 1),
-                                    shape: Border.all(
-                                        color: Color.fromRGBO(211, 172, 43, 1)),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
+          body: BlocListener<HomeBloc, HomeState>(
+            listener: (context,state) {
+              if (state is ContactUsSuccess) {
+                Scaffold.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.response),
+                    backgroundColor: Colors.red,
                   ),
                 );
-              } else
-                return LoadingIndicator();
+              }
             },
+            child: BlocBuilder<HomeBloc, HomeState>(
+              builder: (context, state) {
+                if (state is ContactUsLoading)
+                  return LoadingIndicator();
+                else if (state is ContactUsLoaded) {
+                  return WillPopScope(
+                    onWillPop: () {
+                      Navigator.pop(context);
+                    },
+                    child: Stack(
+                      children: [
+                        Container(
+                          decoration: new BoxDecoration(
+                            image: new DecorationImage(
+                              image: new AssetImage("assets/homeBack.png"),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: IconButton(
+                            icon: Icon(Icons.arrow_back,color: Colors.white,),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ),
+
+                        Container(
+                          margin: EdgeInsets.only(
+                              top: MediaQuery.of(context).size.height * 0.15),
+                          height: MediaQuery.of(context).size.height * 0.8,
+                          padding: EdgeInsets.all(30),
+                          child: Form(
+                            key: formKey,
+                            child: ListView(
+                              children: [
+                                buildInputs("NAME"),
+                                buildInputs("E-MAIL"),
+                                buildInputs("MESSAGE"),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Align(
+                                  child: SizedBox(
+                                    width: 250,
+                                    child: RaisedButton(
+                                      onPressed: () {
+                                        if (formKey.currentState.validate()) {
+                                          formKey.currentState.save();
+                                          print('Form is valid');
+                                          /* BlocProvider.of<LoginBloc>(context).add(
+                                            LoginButtonPressed(
+                                              username: _email,
+                                              password: _pass,
+                                            ),
+                                          );*/
+                                          BlocProvider.of<HomeBloc>(context).add(ContactUsRequested(userModel,_name,_contactEmail,_message));
+                                        } else {
+                                          print(formKey.currentState.validate());
+                                          print(formKey.currentState);
+                                          print('Form is Not valid');
+                                        }
+                                      },
+                                      child: Text(
+                                        "SEND",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: "MontserratRegular",
+                                            letterSpacing: 3),
+                                      ),
+                                      color: Color(0xFFbf2431),
+                                      disabledColor:
+                                          Color.fromARGB(191, 36, 49, 1),
+                                      shape: Border.all(
+                                          color: Color.fromRGBO(211, 172, 43, 1)),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                } else
+                  return LoadingIndicator();
+              },
+            ),
           ),
         ),
       ),

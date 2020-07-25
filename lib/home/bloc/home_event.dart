@@ -1,3 +1,4 @@
+
 import 'package:player_pro_final/model/model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
@@ -65,8 +66,26 @@ class ContactUsEvent extends HomeEvent {
   List<Object> get props => [];
 }
 
+class ContactUsRequested extends HomeEvent {
+  final UserModel userModel;
+  final String name,email,message;
+  const ContactUsRequested(this.userModel,this.name,this.email,this.message);
+  @override
+  // TODO: implement props
+  List<Object> get props => [userModel,name,email,message];
+}
+
 class ReportProbEvent extends HomeEvent {
   @override
   // TODO: implement props
   List<Object> get props => [];
+}
+
+class ReportProbRequested extends HomeEvent {
+  final UserModel userModel;
+  final String name,title,problem;
+  const ReportProbRequested(this.userModel,this.name,this.title,this.problem);
+  @override
+  // TODO: implement props
+  List<Object> get props => [userModel,name,title,problem];
 }

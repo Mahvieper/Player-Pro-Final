@@ -48,7 +48,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     } else if(event is IndividualLearningPlan) {
       yield IndLearningLoading();
       try {
-        yield IndLearningLoaded(userModel);
+        String token = await _getToken();
+        List<IndividualLearningModel> indiLearnList = await userRepository.getIndiPlan(token);
+        yield IndLearningLoaded(userModel,indiLearnList);
       } catch (error) {
         yield IndLearningError(error: error.toString());
       }
@@ -86,6 +88,19 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       } catch(error) {
         yield ContactUsError(error : error.toString());
       }
+    } else if(event is ContactUsRequested) {
+      UserModel userModel = event.userModel;
+      String token = await _getToken();
+      try {
+        String responseMessage = await userRepository.sendContactUs(
+            event.name, event.email, event.message, token);
+
+        yield ContactUsSuccess(response: responseMessage);
+
+        yield ContactUsLoaded(userModel);
+      } catch(error) {
+        ContactUsError(error: error.toString());
+      }
     } else if (event is ReportProbEvent) {
       yield ReportProbLoading();
 
@@ -93,6 +108,19 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         yield ReportProbLoaded(userModel);
       } catch(error) {
         yield ReportProbError(error : error.toString());
+      }
+    } else if(event is ReportProbRequested) {
+      UserModel userModel = event.userModel;
+      String token = await _getToken();
+      try {
+        String responseMessage = await userRepository.sendReportProblemRequest(
+            event.name, event.title, event.problem, token);
+
+        yield ReportProbSuccess(response: responseMessage);
+
+        yield ReportProbLoaded(userModel);
+      } catch(error) {
+        ContactUsError(error: error.toString());
       }
     }
   }

@@ -37,14 +37,11 @@ class UserRepository {
     //return 'token';
   }
 
-
-
   Future<void> deleteToken() async {
     /// delete from keystore/keychain
     await Future.delayed(Duration(seconds: 1));
     return;
   }
-
 
   Future<void> persistToken(String token) async {
     /// write to keystore/keychain
@@ -98,11 +95,101 @@ class UserRepository {
       users.add(PlayerPoints.fromJson(i));
     }
 
-    users.sort((a, b) => a.fields.points.compareTo(b.fields.points));
+    print("Users Before List ==> ");
+    print(users);
+    users.sort((a, b) => int.parse(a.fields.points).compareTo(int.parse(b.fields.points)));
     users = users.reversed.toList();
-    print("Users List ==> "+ users.toString());
+    print("Users after List ==> ");
+    print(users);
     return users;
   }
+
+
+//Sending Contact US Request
+  Future<String> sendContactUs(String name,String email,String message,String token) async {
+    var url = 'https://akyproplayer.herokuapp.com/sendcontact/';
+    print("Token Header " + token);
+
+    Map data = {
+      "name":name,
+      "email":email,
+      "message":message
+    };
+    //encode Map to JSON
+    print(data);
+    var body = json.encode(data);
+
+    var response = await http.post(url,
+      headers: {"Authorization" : "Token "+token,
+        "Content-Type": "application/json"},
+      body: body
+    );
+    print("${response.statusCode}");
+    print("${response.body}");
+
+    if(response.statusCode != 200) {
+      throw Exception();
+    }
+
+    final parsed = json.decode(response.body);
+
+    return parsed.toString();
+  }
+
+  //Sending Report Problem US Request
+  Future<String> sendReportProblemRequest(String name,String title,String problem,String token) async {
+    var url = 'https://akyproplayer.herokuapp.com/sendcomplaint/';
+    print("Token Header " + token);
+
+    Map data = {
+      "name":name,
+      "title":title,
+      "problem":problem
+    };
+    //encode Map to JSON
+    print(data);
+    var body = json.encode(data);
+
+    var response = await http.post(url,
+        headers: {"Authorization" : "Token "+token,
+          "Content-Type": "application/json"},
+        body: body
+    );
+    print("${response.statusCode}");
+    print("${response.body}");
+
+    if(response.statusCode != 200) {
+      throw Exception();
+    }
+
+    final parsed = json.decode(response.body);
+
+    return parsed.toString();
+  }
+
+  Future<List<IndividualLearningModel>> getIndiPlan(String token) async {
+    var url = 'https://akyproplayer.herokuapp.com/individual/';
+    print("Token Header " + token);
+    var response = await http.get(url,
+      headers: {"Authorization" : "Token "+token},
+    );
+    print("${response.statusCode}");
+    print("${response.body}");
+
+    if(response.statusCode != 200) {
+      throw Exception();
+    }
+
+    final parsed = json.decode(response.body) as List;
+    List<IndividualLearningModel> indiLearnList = new List<IndividualLearningModel>();
+
+    for(Map i in parsed){
+      indiLearnList.add(IndividualLearningModel.fromJson(i));
+    }
+
+    return indiLearnList;
+  }
+
 }
 
 class Token_Model {
@@ -308,6 +395,63 @@ class Fields {
     data['name'] = this.name;
     data['points'] = this.points;
     data['id'] = this.id;
+    return data;
+  }
+}
+
+class IndividualLearningModel {
+  int id;
+  int playerId;
+  String name;
+  String target;
+  String technical;
+  String physical;
+  String psychology;
+  String social;
+  String tactical;
+  String information;
+  String date;
+
+  IndividualLearningModel(
+      {this.id,
+        this.playerId,
+        this.name,
+        this.target,
+        this.technical,
+        this.physical,
+        this.psychology,
+        this.social,
+        this.tactical,
+        this.information,
+        this.date});
+
+  IndividualLearningModel.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    playerId = json['playerId'];
+    name = json['Name'];
+    target = json['Target'];
+    technical = json['Technical'];
+    physical = json['Physical'];
+    psychology = json['Psychology'];
+    social = json['Social'];
+    tactical = json['Tactical'];
+    information = json['Information'];
+    date = json['date'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['playerId'] = this.playerId;
+    data['Name'] = this.name;
+    data['Target'] = this.target;
+    data['Technical'] = this.technical;
+    data['Physical'] = this.physical;
+    data['Psychology'] = this.psychology;
+    data['Social'] = this.social;
+    data['Tactical'] = this.tactical;
+    data['Information'] = this.information;
+    data['date'] = this.date;
     return data;
   }
 }
