@@ -18,6 +18,7 @@ class UserModels {
   String level;
   String experience;
   String adminDetails;
+  String weekPoints;
 
   UserModels(
       {this.email,
@@ -38,83 +39,30 @@ class UserModels {
         this.designation,
         this.level,
         this.experience,
-        this.adminDetails});
+        this.adminDetails,
+        this.weekPoints});
 
   UserModels.fromJson(Map<String, dynamic> json) {
     email = json['email'];
     id = json['id'];
     name = json['name'];
     role = json['role'];
-    if(json['superAdminName'] != null)
-      superAdminName = json['superAdminName'];
-    else
-      superAdminName = "";
-    if(json['AdminName']  != null)
-      adminName = json['AdminName'];
-    else
-      adminName = "";
-
-    if(json['points'] !=null)
-      points = json['points'];
-    else
-      points ="";
-
-    if(json['userActive'])
-      userActive = json['userActive'];
-    else
-      userActive = false;
-
-    if(json['superAdminDeviceRegId'] !=null)
-      superAdminDeviceRegId = json['superAdminDeviceRegId'];
-    else
-      superAdminDeviceRegId ="";
-    if(json['adminDeviceRegId'] !=null)
-      adminDeviceRegId = json['adminDeviceRegId'];
-    else
-      adminDeviceRegId = "";
-    if(json['userDeviceRegId'] !=null)
-      userDeviceRegId = json['userDeviceRegId'];
-    else
-      userDeviceRegId = "";
-
-    if(json['super_admin_id'] != null)
-      superAdminId = json['super_admin_id'];
-    else
-      superAdminId = 0;
-
-    if(json['admin_id'] !=null)
-      adminId = json['admin_id'];
-    else
-      adminId = 0;
-
-    if(json['image']!=null)
-      image = json['image'];
-    else
-      image ="";
-
-    if(json['videoUrl'] !=null)
-      videoUrl = json['videoUrl'];
-    else
-      videoUrl = "";
-
-    if(json['designation'] !=null)
-      designation = json['designation'];
-    else
-      designation = "";
-
-    if(json['level'] !=null)
-      level = json['level'];
-    else
-      level ="";
-
-    if(json['experience'] !=null)
-      experience = json['experience'];
-    else
-      experience ="";
-    if(json['adminDetails'] !=null)
-      adminDetails = json['adminDetails'];
-    else
-      adminDetails = "";
+    superAdminName = json['superAdminName'];
+    adminName = json['AdminName'];
+    points = json['points'];
+    userActive = json['userActive'];
+    superAdminDeviceRegId = json['superAdminDeviceRegId'];
+    adminDeviceRegId = json['adminDeviceRegId'];
+    userDeviceRegId = json['userDeviceRegId'];
+    superAdminId = json['super_admin_id'];
+    adminId = json['admin_id'];
+    image = json['image'];
+    videoUrl = json['videoUrl'];
+    designation = json['designation'];
+    level = json['level'];
+    experience = json['experience'];
+    adminDetails = json['adminDetails'];
+    weekPoints = json['weekPoints'];
   }
 
   Map<String, dynamic> toJson() {
@@ -138,6 +86,7 @@ class UserModels {
     data['level'] = this.level;
     data['experience'] = this.experience;
     data['adminDetails'] = this.adminDetails;
+    data['weekPoints'] = this.weekPoints;
     return data;
   }
 }

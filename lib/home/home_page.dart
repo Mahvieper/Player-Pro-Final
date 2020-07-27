@@ -280,18 +280,18 @@ class HomePage extends StatelessWidget {
                                     .add(FetchPoints(userModels: userModel));
                               },
                               child: Container(
-                                  margin: EdgeInsets.fromLTRB(50, 10, 50, 0),
+                                  margin: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.1, 10, MediaQuery.of(context).size.width * 0.1, 0),
                                   child: Image.asset("assets/myPoints.png")),
                             ),
                             Container(
-                                margin: EdgeInsets.fromLTRB(50, 10, 50, 0),
+                                margin: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.1, 10, MediaQuery.of(context).size.width * 0.1, 0),
                                 child: Image.asset("assets/myShop.png")),
                             InkWell(
                               onTap: () {
                             Navigator.of(context).push(new MaterialPageRoute(builder: (_) => PracticePage(userModel)));
                               },
                               child: Container(
-                                  margin: EdgeInsets.fromLTRB(47, 10, 50, 0),
+                                  margin: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.1, 10, MediaQuery.of(context).size.width * 0.1, 0),
                                   child: Image.asset("assets/practiceHome.png")),
                             ),
                             InkWell(
@@ -300,7 +300,7 @@ class HomePage extends StatelessWidget {
                                     .add(IndividualLearningPlan());
                               },
                               child: Container(
-                                  margin: EdgeInsets.fromLTRB(50, 10, 50, 0),
+                                  margin: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.1, 10, MediaQuery.of(context).size.width * 0.1, 0),
                                   child:
                                       Image.asset("assets/myIndividual.png")),
                             ),
@@ -1359,6 +1359,20 @@ class HomePage extends StatelessWidget {
                           ),
                         ),
                       ),
+
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.menu,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            _scaffoldKey.currentState.openDrawer();
+                          },
+                        ),
+                      ),
+
                       //The Sections.
                       Center(
                         child: Column(
@@ -1370,24 +1384,29 @@ class HomePage extends StatelessWidget {
                                     .add(FetchPoints(userModels: userModel));
                               },
                               child: Container(
-                                  margin: EdgeInsets.fromLTRB(50, 10, 50, 0),
+                                  margin: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.1, 10, MediaQuery.of(context).size.width * 0.1, 0),
                                   child: Image.asset("assets/myPoints.png")),
                             ),
                             Container(
-                                margin: EdgeInsets.fromLTRB(50, 10, 50, 0),
+                                margin: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.1, 10, MediaQuery.of(context).size.width * 0.1, 0),
                                 child: Image.asset("assets/myShop.png")),
-                            Container(
-                                margin: EdgeInsets.fromLTRB(47, 10, 50, 0),
-                                child: Image.asset("assets/practiceHome.png")),
+                            InkWell(
+                              onTap: () {
+                                Navigator.of(context).push(new MaterialPageRoute(builder: (_) => PracticePage(userModel)));
+                              },
+                              child: Container(
+                                  margin: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.1, 10, MediaQuery.of(context).size.width * 0.1, 0),
+                                  child: Image.asset("assets/practiceHome.png")),
+                            ),
                             InkWell(
                               onTap: () {
                                 BlocProvider.of<HomeBloc>(context)
                                     .add(IndividualLearningPlan());
                               },
                               child: Container(
-                                  margin: EdgeInsets.fromLTRB(50, 10, 50, 0),
+                                  margin: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.1, 10, MediaQuery.of(context).size.width * 0.1, 0),
                                   child:
-                                      Image.asset("assets/myIndividual.png")),
+                                  Image.asset("assets/myIndividual.png")),
                             ),
                           ],
                         ),
@@ -1414,8 +1433,8 @@ class HomePage extends StatelessWidget {
                                   child: Container(
                                       margin: EdgeInsets.only(
                                           left: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
+                                              .size
+                                              .width *
                                               0.05),
                                       child: Text(
                                         "MY COACH",
@@ -1441,8 +1460,8 @@ class HomePage extends StatelessWidget {
                                   child: Container(
                                       margin: EdgeInsets.only(
                                           left: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
+                                              .size
+                                              .width *
                                               0.03),
                                       child: Text(
                                         "HIGHSCORES",
@@ -1462,14 +1481,14 @@ class HomePage extends StatelessWidget {
                               child: Container(
                                 width: MediaQuery.of(context).size.width / 3,
                                 decoration:
-                                    BoxDecoration(color: Color(0xFFbf2431)),
+                                BoxDecoration(color: Color(0xFFbf2431)),
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Container(
                                       margin: EdgeInsets.only(
                                           left: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
+                                              .size
+                                              .width *
                                               0.07),
                                       child: Text(
                                         "LOGOUT",

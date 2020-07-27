@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:player_pro_final/home/home.dart';
 import 'package:player_pro_final/model/model.dart';
 import 'package:user_repository/user_repository.dart';
+
+import '../adminHome/admin_home_page.dart';
 class HomeSelection extends StatelessWidget {
   final UserRepository userRepository;
   String userRole;
@@ -14,7 +16,7 @@ class HomeSelection extends StatelessWidget {
        //  return SuperAdmin();
          break;
        case 'Admin' :
-       //  return Admin();
+        return AdminHomePage(userModel,userRepository);
          break;
        case 'Player' :
          return HomePage(userModel,userRepository);

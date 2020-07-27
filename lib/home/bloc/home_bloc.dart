@@ -35,7 +35,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   @override
   Stream<HomeState> mapEventToState(HomeEvent event) async* {
     if(event is HomeInitEvent) {
-
       yield HomeInitial();
     }
     else if (event is FetchPoints) {
