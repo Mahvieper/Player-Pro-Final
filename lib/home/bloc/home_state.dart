@@ -60,11 +60,11 @@ class HomePointsError extends HomeState {
 class ShopLoading extends HomeState {}
 
 class ShopLoaded extends HomeState {
-  final UserModel userModels;
+  final List<ShoppingItemModel> shoppingItemsList;
 
-  ShopLoaded(this.userModels);
+  ShopLoaded(this.shoppingItemsList);
   @override
-  List<Object> get props => [userModels];
+  List<Object> get props => [shoppingItemsList];
 }
 
 class ShopError extends HomeState {
@@ -77,6 +77,52 @@ class ShopError extends HomeState {
 
   @override
   String toString() => 'ShopError { error: $error }';
+}
+
+//--------------For Shop Confirmation Section-------------------------------
+class ItemConfirmationLoading extends HomeState {}
+
+class ItemConfirmationLoaded extends HomeState {
+  final ShoppingItemModel shoppingItem;
+  final UserModel currentPlayer;
+  ItemConfirmationLoaded(this.shoppingItem,this.currentPlayer);
+  @override
+  List<Object> get props => [shoppingItem,currentPlayer];
+}
+
+class ItemConfirmationError extends HomeState {
+  final String error;
+
+  const ItemConfirmationError({@required this.error});
+
+  @override
+  List<Object> get props => [error];
+
+  @override
+  String toString() => 'ItemConfirmationError { error: $error }';
+}
+
+//--------------For Item Purchased Section-------------------------------
+class ItemPurchasedLoading extends HomeState {}
+
+class ItemPurchasedLoaded extends HomeState {
+  final PurchasedModel purchasedItem;
+  //final UserModel currentPlayer;
+  ItemPurchasedLoaded(this.purchasedItem);
+  @override
+  List<Object> get props => [purchasedItem];
+}
+
+class ItemPurchasedError extends HomeState {
+  final String error;
+
+  const ItemPurchasedError({@required this.error});
+
+  @override
+  List<Object> get props => [error];
+
+  @override
+  String toString() => 'ItemConfirmationError { error: $error }';
 }
 //--------------For Practice Section-------------------------------
 class PracticeLoading extends HomeState {}

@@ -106,3 +106,99 @@ class AssignPointsToPlayerError extends AdminHomeState {
   @override
   String toString() => 'AssignPointsToPlayerError { error: $error }';
 }
+
+//------------------------------------------------------------------
+
+class AssignVideosLoading extends AdminHomeState {}
+
+class AssignVideosLoaded extends AdminHomeState {
+  final List<VideoModel> videosList;
+  final List<FetchPlayersModel> fetchPlayers;
+  AssignVideosLoaded(this.videosList,this.fetchPlayers);
+
+  @override
+  List<Object> get props => [videosList,fetchPlayers];
+}
+
+class AssignVideosError extends AdminHomeState {
+  final String error;
+
+  const AssignVideosError({@required this.error});
+
+  @override
+  List<Object> get props => [error];
+
+  @override
+  String toString() => 'AssignVideosError { error: $error }';
+}
+
+//------------------------------------------------------------------
+
+class AssignVideosToPlayerLoading extends AdminHomeState {}
+
+class AssignVideosToPlayerLoaded extends AdminHomeState {
+  final UserModel player;
+  AssignVideosToPlayerLoaded(this.player);
+
+  @override
+  List<Object> get props => [player];
+}
+
+class AssignVideosToPlayerError extends AdminHomeState {
+  final String error;
+
+  const AssignVideosToPlayerError({@required this.error});
+
+  @override
+  List<Object> get props => [error];
+
+  @override
+  String toString() => 'AssignVideosToPlayerError { error: $error }';
+}
+
+//--------------For Individual Learning Plan Section-------------------------------
+class IndLearningLoading extends AdminHomeState {}
+
+class IndLearningLoaded extends AdminHomeState {
+  final UserModel userModels;
+  final List<FetchPlayersModel> fetchPlayers;
+  IndLearningLoaded(this.userModels,this.fetchPlayers);
+  @override
+  List<Object> get props => [userModels,fetchPlayers];
+}
+
+class IndLearningError extends AdminHomeState {
+  final String error;
+
+  const IndLearningError({@required this.error});
+
+  @override
+  List<Object> get props => [error];
+
+  @override
+  String toString() => 'IndLearningError { error: $error }';
+}
+
+
+//--------------For Individual Learning Plan Section-------------------------------
+class IndLearningDetailLoading extends AdminHomeState {}
+
+class IndLearningDetailLLoaded extends AdminHomeState {
+  final UserModel userModels;
+  final IndividualLearningModel indiPlanForPlayer;
+  IndLearningDetailLLoaded(this.userModels,this.indiPlanForPlayer);
+  @override
+  List<Object> get props => [userModels,indiPlanForPlayer];
+}
+
+class IndLearningDetailLError extends AdminHomeState {
+  final String error;
+
+  const IndLearningDetailLError({@required this.error});
+
+  @override
+  List<Object> get props => [error];
+
+  @override
+  String toString() => 'IndLearningDetailLError { error: $error }';
+}

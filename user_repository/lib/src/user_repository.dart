@@ -189,6 +189,25 @@ class UserRepository {
     return indiLearnList;
   }
 
+  Future<IndividualLearningModel> getIndiPlanForPlayer(String token,String playerId) async {
+    var url = 'https://akyproplayer.herokuapp.com/individual/' + playerId + '/';
+    print("Token Header " + token);
+    var response = await http.get(url,
+      headers: {"Authorization" : "Token "+token},
+    );
+    print("${response.statusCode}");
+    print("${response.body}");
+
+    if(response.statusCode != 200) {
+      throw Exception();
+    }
+
+    final parsed = json.decode(response.body);
+    IndividualLearningModel indiLearn = IndividualLearningModel.fromJson(parsed);
+
+    return indiLearn;
+  }
+
   Future<List<FetchPlayersModel>> fetchPlayersUnderAdmin(String token,String adminId) async {
     var url = 'https://akyproplayer.herokuapp.com/playerunderadmin/' + adminId + '/';
     print("Token Header " + token);
@@ -211,6 +230,31 @@ class UserRepository {
 
     return fetchedPlayesList;
   }
+
+  Future<UserModel> updateUser(String token,String playerId,var body) async {
+    var url = 'https://akyproplayer.herokuapp.com/user/' + playerId + '/';
+    print("Token Header " + token);
+
+    var response = await http.patch(url,
+      headers: {"Authorization" : "Token "+token,
+        "Content-Type": "application/json"},
+      body : body,
+    );
+
+
+    print("${response.statusCode}");
+    print("${response.body}");
+
+    if(response.statusCode != 201) {
+      throw Exception();
+    }
+
+    final parsed = json.decode(response.body);
+    UserModel user = UserModel.fromJson(parsed);
+
+    return user;
+  }
+
 
   Future<UserModel> assignPointsToUser(String token,String playerId,String pointsAssigned) async {
     var url = 'https://akyproplayer.herokuapp.com/user/' + playerId + '/';
@@ -240,6 +284,75 @@ class UserRepository {
     UserModel user = UserModel.fromJson(parsed);
 
     return user;
+  }
+
+  Future<List<VideoModel>> getVideos(String token) async {
+    var url = 'https://akyproplayer.herokuapp.com/assignment/';
+    print("Token Header " + token);
+    var response = await http.get(url,
+      headers: {"Authorization" : "Token "+token},
+    );
+    print("${response.statusCode}");
+    print("${response.body}");
+
+    if(response.statusCode != 200) {
+      throw Exception();
+    }
+
+    final parsed = json.decode(response.body) as List;
+    List<VideoModel> videosList = new List<VideoModel>();
+
+    for(Map i in parsed){
+      videosList.add(VideoModel.fromJson(i));
+    }
+
+    return videosList;
+  }
+
+
+  Future<List<ShoppingItemModel>> getShoppingItems(String token) async {
+    var url = 'https://akyproplayer.herokuapp.com/goodies/';
+    print("Token Header " + token);
+    var response = await http.get(url,
+      headers: {"Authorization" : "Token "+token},
+    );
+    print("${response.statusCode}");
+    print("${response.body}");
+
+    if(response.statusCode != 200) {
+      throw Exception();
+    }
+
+    final parsed = json.decode(response.body) as List;
+    List<ShoppingItemModel> shoppingItemsList = new List<ShoppingItemModel>();
+
+    for(Map i in parsed){
+      shoppingItemsList.add(ShoppingItemModel.fromJson(i));
+    }
+
+    return shoppingItemsList;
+  }
+
+
+  Future<PurchasedModel> makePurchase(String token,var body) async {
+    var url = 'https://akyproplayer.herokuapp.com/redeem/';
+    print("Token Header " + token);
+    var response = await http.post(url,
+      headers: {"Authorization" : "Token "+token,
+        "Content-Type": "application/json"},
+        body :body
+    );
+    print("${response.statusCode}");
+    print("${response.body}");
+
+    if(response.statusCode != 201) {
+      throw Exception();
+    }
+
+    final parsed = json.decode(response.body);
+    PurchasedModel purchasedItem = PurchasedModel.fromJson(parsed);
+
+    return purchasedItem;
   }
 
 }
@@ -459,3 +572,110 @@ class IndividualLearningModel {
   }
 }
 
+class VideoModel {
+  int id;
+  String name;
+  String description;
+  bool isActive;
+  String videoLink;
+
+  VideoModel(
+      {this.id, this.name, this.description, this.isActive, this.videoLink});
+
+  VideoModel.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['Name'];
+    description = json['Description'];
+    isActive = json['isActive'];
+    videoLink = json['videoLink'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['Name'] = this.name;
+    data['Description'] = this.description;
+    data['isActive'] = this.isActive;
+    data['videoLink'] = this.videoLink;
+    return data;
+  }
+}
+
+
+class ShoppingItemModel {
+  int id;
+  String name;
+  String description;
+  int pointsRequired;
+  bool isActive;
+  String image;
+
+  ShoppingItemModel(
+      {this.id,
+        this.name,
+        this.description,
+        this.pointsRequired,
+        this.isActive,
+        this.image});
+
+  ShoppingItemModel.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['Name'];
+    description = json['Description'];
+    pointsRequired = json['PointsRequired'];
+    isActive = json['isActive'];
+    image = json['image'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['Name'] = this.name;
+    data['Description'] = this.description;
+    data['PointsRequired'] = this.pointsRequired;
+    data['isActive'] = this.isActive;
+    data['image'] = this.image;
+    return data;
+  }
+}
+
+class PurchasedModel {
+  int id;
+  String userName;
+  String userId;
+  String points;
+  String goodiesName;
+  String goodiesId;
+  String dateRaised;
+
+  PurchasedModel(
+      {this.id,
+        this.userName,
+        this.userId,
+        this.points,
+        this.goodiesName,
+        this.goodiesId,
+        this.dateRaised});
+
+  PurchasedModel.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    userName = json['userName'];
+    userId = json['userId'];
+    points = json['points'];
+    goodiesName = json['goodiesName'];
+    goodiesId = json['goodiesId'];
+    dateRaised = json['dateRaised'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['userName'] = this.userName;
+    data['userId'] = this.userId;
+    data['points'] = this.points;
+    data['goodiesName'] = this.goodiesName;
+    data['goodiesId'] = this.goodiesId;
+    data['dateRaised'] = this.dateRaised;
+    return data;
+  }
+}

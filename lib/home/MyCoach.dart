@@ -182,7 +182,7 @@ class MyCoach extends StatelessWidget {
                                       image: DecorationImage(
                                           fit: BoxFit.cover,
                                           image: NetworkImage(
-                                            userModel.image,
+                                            "https://i.ibb.co/WgWqxhj/shridhar-1.png",
                                           ))),
                                 ),
                               ),

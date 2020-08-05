@@ -38,10 +38,10 @@ class _PracticePageState extends State<PracticePage> {
         length: 3,
         child: Scaffold(
           key: const ValueKey<String>('home_page'),
-          appBar: AppBar(
+         /* appBar: AppBar(
             backgroundColor: Colors.transparent,
-          ),
-          body: _BumbleBeeRemoteVideo(),
+          ),*/
+          body: _BumbleBeeRemoteVideo(widget.userModel),
         ),
       ),
     );
@@ -49,6 +49,8 @@ class _PracticePageState extends State<PracticePage> {
 }
 
 class _BumbleBeeRemoteVideo extends StatefulWidget {
+  final UserModel userModel;
+  _BumbleBeeRemoteVideo(this.userModel);
   @override
   _BumbleBeeRemoteVideoState createState() => _BumbleBeeRemoteVideoState();
 }
@@ -74,7 +76,7 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
     });
 
     _controller = VideoPlayerController.network(
-      'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
+      widget.userModel.videoUrl,
     )..initialize().then((_) {
         setState(() {});
       });
@@ -96,9 +98,8 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
     Widget slider(VideoPlayerController controller) {
       return SliderTheme(
         data: SliderThemeData(
-          thumbShape: RoundSliderThumbShapeExtended(customImage),
-          trackHeight: 0.5
-        ),
+            thumbShape: RoundSliderThumbShapeExtended(customImage),
+            trackHeight: 0.5),
         child: Slider(
             value: controller.value.position != null
                 ? controller.value.position.inMilliseconds.toDouble()
@@ -129,65 +130,94 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
       return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
     }
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: <Widget>[
-       // const Text('With remote mp4'),
-        _controller.value.initialized
-            ? AspectRatio(
-                aspectRatio: 3/2.9,
-                child: VideoPlayer(_controller),
-              )
-            : Container(),
+    return Container(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          // const Text('With remote mp4'),
 
-        Container(
-          decoration: BoxDecoration(
-              color: Color.fromRGBO(58, 58, 58, 1),
-              border: Border(
-                  top: BorderSide(
-                      color: Color.fromRGBO(211, 172, 43, 1), width: 3))),
-          height: MediaQuery.of(context).size.height / 3.5,
-          child: Column(
-            children: [
-              // VideoProgressIndicator(_controller, allowScrubbing: true,colors: VideoProgressColors(playedColor: Color.fromRGBO(184, 38, 49, 1),bufferedColor: Color.fromRGBO(184, 38, 49, 1)),),
-              slider(_controller),
 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 25.0),
-                    child: _controller.value.position != null
-                        ? Text(
-                            _printDuration(Duration(
-                                seconds:
-                                    _controller.value.position.inSeconds)),
-                            style: TextStyle(color: Colors.white),
-                          )
-                        : Text("0"),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 25.0),
-                    child: _controller.value.duration != null
-                        ? Text(
-                            _printDuration(Duration(
-                                seconds:
-                                    _controller.value.duration.inSeconds)),
-                            style: TextStyle(color: Colors.white),
-                          )
-                        : Text("0"),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              _PlayPauseOverlay(controller: _controller),
-            ],
+          Flexible(
+            child: Stack(children: [
+              _controller.value.initialized
+                  ? VideoPlayer(_controller)
+                  : Container(),
+
+              Align(alignment: Alignment.topLeft,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Color(0xaab3a3a3a)
+                ),
+                width: MediaQuery.of(context).size.width,
+                child: Wrap(
+                  children: [
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(2.0),
+                        child: Align(
+                          alignment: Alignment.topLeft,
+                          child: IconButton(
+                            icon: Icon(Icons.arrow_back,color: Color.fromRGBO(211, 172, 43, 1),size: MediaQuery.of(context).size.height * 0.04,),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),)
+            ],),
           ),
-        ),
-        //ClosedCaption(text: _controller.value.caption.text),
-      ],
+
+          Container(
+            decoration: BoxDecoration(
+                color: Color.fromRGBO(58, 58, 58, 1),
+                border: Border(
+                    top: BorderSide(
+                        color: Color.fromRGBO(211, 172, 43, 1), width: 3))),
+            height: MediaQuery.of(context).size.height / 3.5,
+            child: Column(
+              children: [
+                // VideoProgressIndicator(_controller, allowScrubbing: true,colors: VideoProgressColors(playedColor: Color.fromRGBO(184, 38, 49, 1),bufferedColor: Color.fromRGBO(184, 38, 49, 1)),),
+                slider(_controller),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 25.0),
+                      child: _controller.value.position != null
+                          ? Text(
+                              _printDuration(Duration(
+                                  seconds: _controller.value.position.inSeconds)),
+                              style: TextStyle(color: Colors.white),
+                            )
+                          : Text("0"),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 25.0),
+                      child: _controller.value.duration != null
+                          ? Text(
+                              _printDuration(Duration(
+                                  seconds: _controller.value.duration.inSeconds)),
+                              style: TextStyle(color: Colors.white),
+                            )
+                          : Text("0"),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                _PlayPauseOverlay(controller: _controller),
+              ],
+            ),
+          ),
+          //ClosedCaption(text: _controller.value.caption.text),
+        ],
+      ),
     );
   }
 }

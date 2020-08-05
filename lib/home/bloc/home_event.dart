@@ -34,6 +34,27 @@ class ShopEvent extends HomeEvent {
   List<Object> get props => [];
 }
 
+class ItemConfirmationEvent extends HomeEvent {
+  final ShoppingItemModel itemSelected;
+  final UserModel currentPlayer;
+
+  ItemConfirmationEvent(this.itemSelected,this.currentPlayer);
+  @override
+  // TODO: implement props
+  List<Object> get props => [itemSelected,currentPlayer];
+}
+
+
+class ItemPurchasedEvent extends HomeEvent {
+  final ShoppingItemModel itemSelected;
+  final UserModel currentPlayer;
+
+  ItemPurchasedEvent(this.itemSelected,this.currentPlayer);
+  @override
+  // TODO: implement props
+  List<Object> get props => [itemSelected,currentPlayer];
+}
+
 class PracticeEvent extends HomeEvent {
 
   @override

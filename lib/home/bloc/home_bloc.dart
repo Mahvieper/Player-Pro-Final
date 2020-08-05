@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:player_pro_final/authentication/authentication_bloc.dart';
 import 'package:player_pro_final/home/bloc/home_event.dart';
 import 'package:player_pro_final/home/bloc/home_state.dart';
@@ -12,6 +14,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final UserRepository userRepository;
   final UserModel userModel;
   final AuthenticationBloc authenticationBloc;
+  List<ShoppingItemModel> shoppingItemsList;
  // String token;
   HomeBloc({
     @required this.userRepository,
@@ -75,8 +78,57 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         yield GetHighScoresError(error: error.toString());
       }
 
-    }else if(event is ShopEvent) {
+    } else if(event is ShopEvent) {
+      yield ShopLoading();
+      if (shoppingItemsList != null) {
+        yield ShopLoaded(shoppingItemsList);
+      } else {
+        try {
+          String token = await _getToken();
+          List<ShoppingItemModel> shoppingItemsList = await userRepository.getShoppingItems(token);
+          this.shoppingItemsList = shoppingItemsList;
+          yield ShopLoaded(shoppingItemsList);
+        } catch (error) {
+          yield ShopError(error: error.toString());
+        }
+    }
+    } else if(event is ItemConfirmationEvent) {
+      yield ItemConfirmationLoading();
+      try {
+        yield ItemConfirmationLoaded(event.itemSelected,event.currentPlayer);
+        //List<ShoppingItemModel> shoppingItemsList = await userRepository.getShoppingItems(token);
+       // yield ShopLoaded(shoppingItemsList);
+      }catch(error) {
+        yield ItemConfirmationError(error: error.toString());
+      }
+    } else if(event is ItemPurchasedEvent) {
+      yield ItemPurchasedLoading();
 
+      try {
+        String token = await _getToken();
+        if(int.parse(event.currentPlayer.points) >= event.itemSelected.pointsRequired) {
+          Map data = {
+            "userName":event.currentPlayer.name,
+            "userId" : event.currentPlayer.id,
+            "points" : event.itemSelected.pointsRequired,
+            "goodiesName" : event.itemSelected.name,
+            "goodiesId" : event.itemSelected.id
+          };
+          //encode Map to JSON
+          var body = json.encode(data);
+
+          PurchasedModel itemShopped = await userRepository.makePurchase(token, body);
+          int updatedPoints = int.parse(event.currentPlayer.points) - event.itemSelected.pointsRequired;
+          event.currentPlayer.points = updatedPoints.toString();
+          yield ItemPurchasedLoaded(itemShopped);
+          yield ShopLoaded(this.shoppingItemsList);
+        } else {
+          yield ItemPurchasedError(error: "You don't have Enough Points to Buy this Item");
+          yield ShopLoaded(this.shoppingItemsList);
+        }
+      }catch (error) {
+        yield ItemPurchasedError(error: error.toString());
+      }
     } else if(event is PracticeEvent) {
 
     } else if(event is ContactUsEvent) {
@@ -87,7 +139,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       } catch(error) {
         yield ContactUsError(error : error.toString());
       }
-    } else if(event is ContactUsRequested) {
+    }
+    else if(event is ContactUsRequested) {
       UserModel userModel = event.userModel;
       String token = await _getToken();
       try {
@@ -100,7 +153,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       } catch(error) {
         ContactUsError(error: error.toString());
       }
-    } else if (event is ReportProbEvent) {
+    }
+    else if (event is ReportProbEvent) {
       yield ReportProbLoading();
 
       try {
@@ -108,7 +162,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       } catch(error) {
         yield ReportProbError(error : error.toString());
       }
-    } else if(event is ReportProbRequested) {
+    }
+    else if(event is ReportProbRequested) {
       UserModel userModel = event.userModel;
       String token = await _getToken();
       try {
