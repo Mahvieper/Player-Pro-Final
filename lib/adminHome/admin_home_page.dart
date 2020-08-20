@@ -33,7 +33,7 @@ class AdminHomePage extends StatelessWidget {
   ];
 
   String _target,_technical,_physical,_psychological,_social,_tactical,_additionalInfo;
-
+  IndividualLearningModel indModel = new IndividualLearningModel();
   List<Map<String, Object>> _indiMapList;
 
   @override
@@ -77,21 +77,74 @@ class AdminHomePage extends StatelessWidget {
                   keyboardType: TextInputType.multiline,
                   minLines: title.contains("MESSAGE") ? 5 : 1,
                   maxLines: 8,
-                  onSaved: (val) {
-                    if(title.contains("TARGET"))
+                  onChanged: (val) {
+                    if(title.contains("TARGET")) {
                       _target = val;
-                    else if(title.contains("TECHNICAL"))
+                      indModel.target = val;
+                    }
+                    else if(title.contains("TECHNICAL")) {
                       _technical = val;
-                    else if(title.contains("PHYSICAL"))
+                      indModel.technical = val;
+                    }
+
+                    else if(title.contains("PHYSICAL")) {
+                      indModel.physical = val;
                       _physical = val;
-                    else if(title.contains("PSYCHOLOGICAL"))
+                    }
+                    else if(title.contains("PSYCHOLOGICAL")) {
                       _psychological = val;
-                    else if(title.contains("SOCIAL"))
+                      indModel.psychology = val;
+                    }
+
+                    else if(title.contains("SOCIAL")) {
+                      indModel.social = val;
                       _social = val;
-                    else if(title.contains("TACTICAL"))
+                    }
+
+                    else if(title.contains("TACTICAL")) {
+                      indModel.tactical = val;
                       _tactical = val;
-                    else if(title.contains("ADDITIONAL INFORMATION"))
+                    }
+
+                    else if(title.contains("ADDITIONAL INFORMATION")) {
+                      indModel.information = val;
                       _additionalInfo = val;
+                    }
+                  },
+                  onSaved: (val) {
+                    if(title.contains("TARGET")) {
+                      _target = val;
+                      indModel.target = val;
+                    }
+                    else if(title.contains("TECHNICAL")) {
+                      _technical = val;
+                      indModel.technical = val;
+                    }
+
+                    else if(title.contains("PHYSICAL")) {
+                      indModel.physical = val;
+                      _physical = val;
+                    }
+                    else if(title.contains("PSYCHOLOGICAL")) {
+                      _psychological = val;
+                      indModel.psychology = val;
+                    }
+
+                    else if(title.contains("SOCIAL")) {
+                      indModel.social = val;
+                      _social = val;
+                    }
+
+                    else if(title.contains("TACTICAL")) {
+                      indModel.tactical = val;
+                      _tactical = val;
+                    }
+
+                    else if(title.contains("ADDITIONAL INFORMATION")) {
+                      indModel.information = val;
+                      _additionalInfo = val;
+                    }
+
                   },
                   initialValue: desc,
 
@@ -206,6 +259,13 @@ class AdminHomePage extends StatelessWidget {
                       backgroundColor: Colors.red,
                     ),
                   );
+                } else if(state is IndLearningDetailLSendLoaded) {
+                  Scaffold.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Details Added"),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
                 }
               },
               child: BlocBuilder<AdminHomeBloc, AdminHomeState>(
@@ -310,8 +370,8 @@ class AdminHomePage extends StatelessWidget {
                             children: [
                               InkWell(
                                 onTap: () {
-                                  //    BlocProvider.of<HomeBloc>(context)
-                                  //     .add(GetHighScoreEvent());
+                                     BlocProvider.of<AdminHomeBloc>(context)
+                                      .add(GetHighScoreEvent());
                                 },
                                 child: Container(
                                   width: MediaQuery.of(context).size.width / 3,
@@ -819,20 +879,41 @@ class AdminHomePage extends StatelessWidget {
                                 itemCount: IndList.length,
                                 itemBuilder: (context, index) {
                                   String desc="";
-                                  if(IndList[index].contains("TARGET"))
+                                  if(IndList[index].contains("TARGET")) {
+                                    indModel.target = state.indiPlanForPlayer.target;
                                     desc = state.indiPlanForPlayer.target;
-                                  else if(IndList[index].contains("TECHNICAL"))
+                                  }
+
+                                  else if(IndList[index].contains("TECHNICAL")) {
+                                    indModel.technical = state.indiPlanForPlayer.technical;
                                     desc = state.indiPlanForPlayer.technical;
-                                  else if(IndList[index].contains("PHYSICAL"))
+                                  }
+
+                                  else if(IndList[index].contains("PHYSICAL")) {
+                                    indModel.physical = state.indiPlanForPlayer.physical;
                                     desc = state.indiPlanForPlayer.physical;
-                                  else if(IndList[index].contains("PSYCHOLOGICAL"))
+                                  }
+
+                                  else if(IndList[index].contains("PSYCHOLOGICAL")) {
+                                    indModel.psychology = state.indiPlanForPlayer.psychology;
                                     desc = state.indiPlanForPlayer.psychology;
-                                  else if(IndList[index].contains("SOCIAL"))
+                                  }
+
+                                  else if(IndList[index].contains("SOCIAL")) {
+                                    indModel.social = state.indiPlanForPlayer.social;
                                     desc = state.indiPlanForPlayer.social;
-                                  else if(IndList[index].contains("TACTICAL"))
+                                  }
+
+                                  else if(IndList[index].contains("TACTICAL")) {
+                                    indModel.tactical = state.indiPlanForPlayer.tactical;
                                     desc = state.indiPlanForPlayer.tactical;
-                                  else
+                                  }
+
+                                  else {
+                                    indModel.information = state.indiPlanForPlayer.information;
                                     desc = state.indiPlanForPlayer.information;
+                                  }
+
                                   return buildInd(IndList[index],desc);
                                 }),
                           ),
@@ -870,7 +951,9 @@ class AdminHomePage extends StatelessWidget {
                                     Color.fromARGB(191, 36, 49, 1),
                                     shape: Border.all(color: Color.fromRGBO(211, 172, 43, 1)),
                                     onPressed: () {
-
+                                      indModel.playerId = state.clickedPlayer.fields.id;
+                                      indModel.name = state.clickedPlayer.fields.name;
+                                      BlocProvider.of<AdminHomeBloc>(context).add(IndividualLearningPlanDetailSend(indModel));
                                     }),
                               ),
                             ),
@@ -878,6 +961,126 @@ class AdminHomePage extends StatelessWidget {
                           )
 
 
+                        ],
+                      ),
+                    );
+                  } else if(state is IndLearningDetailSendLoading)  {
+                    return LoadingIndicator();
+                  } else if (state is GetHighScoresLoading) {
+                    return LoadingIndicator();
+                  } else if (state is GetHighScoresLoaded) {
+                    List<PlayerPoints> playerPoints = state.userModels;
+                    return WillPopScope(
+                      onWillPop: () {
+                        BlocProvider.of<AdminHomeBloc>(context).add(AdminHomeInitEvent());
+                      },
+                      child: Stack(
+                        children: [
+                          Container(
+                            decoration: new BoxDecoration(
+                              image: new DecorationImage(
+                                image: new AssetImage("assets/homeBack.png"),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+
+                          Container(
+                            margin: EdgeInsets.only(
+                                top: MediaQuery.of(context).size.height * 0.15),
+                            height: MediaQuery.of(context).size.height * 0.6,
+                            padding: EdgeInsets.all(30),
+                            child: ListView.builder(
+                                itemCount: playerPoints.length,
+                                itemBuilder: (context, index) {
+                                  return Wrap(
+                                    children: [
+                                      Container(
+                                          margin: EdgeInsets.only(top: 10),
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: (index % 2 == 0)
+                                                      ? Color.fromRGBO(
+                                                      211, 172, 43, 1)
+                                                      : Color(0xFFbf2431))),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Padding(
+                                                padding:
+                                                const EdgeInsets.all(8.0),
+                                                child: Text(
+                                                    playerPoints[index]
+                                                        .fields
+                                                        .name
+                                                        .toUpperCase(),
+                                                    style: TextStyle(
+                                                        color: (index % 2 == 0)
+                                                            ? Color.fromRGBO(
+                                                            211, 172, 43, 1)
+                                                            : Color(0xFFbf2431),
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                        FontWeight.bold,
+                                                        fontFamily:
+                                                        "MontserratRegular")),
+                                              ),
+                                              Container(
+                                                  height: 50,
+                                                  width: 80,
+                                                  color: (index % 2 == 0)
+                                                      ? Color.fromRGBO(
+                                                      211, 172, 43, 1)
+                                                      : Color(0xFFbf2431),
+                                                  child: Center(
+                                                      child: Text(
+                                                          playerPoints[index]
+                                                              .fields
+                                                              .points,
+                                                          style: TextStyle(
+                                                              fontSize: 15,
+                                                              fontWeight:
+                                                              FontWeight.bold,
+                                                              fontFamily:
+                                                              "MontserratRegular")))),
+                                            ],
+                                          )),
+                                    ],
+                                  );
+                                }),
+                          ),
+
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: InkWell(
+                              onTap: () {
+                                BlocProvider.of<AdminHomeBloc>(context)
+                                    .add(AdminHomeInitEvent());
+                              },
+                              child: Container(
+                                width: MediaQuery.of(context).size.width / 3,
+                                decoration: BoxDecoration(
+                                    color: Color.fromRGBO(211, 172, 43, 1)),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Container(
+                                      margin: EdgeInsets.only(
+                                          left: MediaQuery.of(context)
+                                              .size
+                                              .width *
+                                              0.08),
+                                      child: Text(
+                                        "HOME",
+                                        style: TextStyle(
+                                            color: Color(0xFF0f3a3f),
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: "MontserratRegular"),
+                                      )),
+                                ),
+                              ),
+                            ),
+                          )
                         ],
                       ),
                     );
@@ -955,8 +1158,8 @@ class AdminHomePage extends StatelessWidget {
                               ),
                               InkWell(
                                 onTap: () {
-                                  //   BlocProvider.of<HomeBloc>(context)
-                                  //     .add(IndividualLearningPlan());
+                                  BlocProvider.of<AdminHomeBloc>(context)
+                                      .add(IndividualLearningPlan());
                                 },
                                 child: Container(
                                     margin: EdgeInsets.fromLTRB(

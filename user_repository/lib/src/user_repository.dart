@@ -55,6 +55,60 @@ class UserRepository {
     return false;
   }
 
+ Future<String> forgetPasssword(String email) async {
+    var url = "https://akyproplayer.herokuapp.com/forgetpassword/";
+
+
+    Map data = {
+      "email":email,
+    };
+    //encode Map to JSON
+    print(data);
+    var body = json.encode(data);
+    var response = await http.put(url,
+      headers: {"Content-Type" : "application/json"},
+      body: body
+    );
+    print("${response.statusCode}");
+    print("${response.body}");
+
+    if(response.statusCode != 200) {
+      throw Exception();
+    }
+
+    final parsed = json.decode(response.body);
+
+    return parsed.toString();
+  }
+
+  Future<String> updatePassword(String oldPass,String newPass,String token) async {
+    var url = "https://akyproplayer.herokuapp.com/updatepassword/";
+
+    Map data = {
+      "old_password":oldPass,
+      "new_password" : newPass
+    };
+    //encode Map to JSON
+    print(data);
+    var body = json.encode(data);
+    var response = await http.put(url,
+        headers: {"Authorization" : "Token "+token,
+          "Content-Type": "application/json"},
+        body: body
+    );
+    print("${response.statusCode}");
+    print("${response.body}");
+
+    if(response.statusCode != 200) {
+      throw Exception();
+    }
+
+    final parsed = json.decode(response.body);
+
+    return parsed.toString();
+  }
+
+
   Future<UserModel> getUser(String token) async {
     var url = 'https://akyproplayer.herokuapp.com/me/';
     print("Token Header " + token);
@@ -256,6 +310,31 @@ class UserRepository {
   }
 
 
+  Future<UserModel> createUser(String token,var body) async {
+    var url = 'https://akyproplayer.herokuapp.com/create/';
+    print("Token Header " + token);
+
+    var response = await http.post(url,
+      headers: {"Authorization" : "Token "+token,
+        "Content-Type": "application/json"},
+      body : body,
+    );
+
+
+    print("${response.statusCode}");
+    print("${response.body}");
+
+    if(response.statusCode != 201) {
+      throw Exception();
+    }
+
+    final parsed = json.decode(response.body);
+    UserModel user = UserModel.fromJson(parsed);
+
+    return user;
+  }
+
+
   Future<UserModel> assignPointsToUser(String token,String playerId,String pointsAssigned) async {
     var url = 'https://akyproplayer.herokuapp.com/user/' + playerId + '/';
     print("Token Header " + token);
@@ -355,6 +434,53 @@ class UserRepository {
     return purchasedItem;
   }
 
+  Future<IndividualLearningModel> postIndiPlanForPlayer(String token,String playerId,var body) async {
+    var url = 'https://akyproplayer.herokuapp.com/individual/' + playerId + '/';
+    print("Token Header " + token);
+    var response = await http.put(url,
+        headers: {"Authorization" : "Token "+token,
+          "Content-Type": "application/json"},
+        body :body
+    );
+    print("${response.statusCode}");
+    print("${response.body}");
+
+    if(response.statusCode != 201) {
+      throw Exception();
+    }
+
+    final parsed = json.decode(response.body);
+    IndividualLearningModel individualLearningModel = IndividualLearningModel.fromJson(parsed);
+
+    return individualLearningModel;
+  }
+
+  //----------------------SuperAdmin API Calls-------------------------
+  Future<List<UserModel>> getAllUsers(String token) async {
+    var url = 'https://akyproplayer.herokuapp.com/users/';
+    print("Token Header " + token);
+    var response = await http.get(url,
+      headers: {"Authorization" : "Token "+token},
+    );
+    print("${response.statusCode}");
+    print("${response.body}");
+
+    if(response.statusCode != 200) {
+      throw Exception();
+    }
+
+    final parsed = json.decode(response.body) as List;
+    List<UserModel> allUsersList = new List<UserModel>();
+
+    for(Map i in parsed){
+      if(UserModel.fromJson(i).role.contains("Super"))
+        continue;
+      allUsersList.add(UserModel.fromJson(i));
+    }
+
+    return allUsersList;
+  }
+
 }
 
 class Token_Model {
@@ -377,6 +503,7 @@ class Token_Model {
 
 class UserModel {
   String email;
+  String password;
   int id;
   String name;
   String role;
@@ -400,6 +527,7 @@ class UserModel {
   UserModel(
       {this.email,
         this.id,
+        this.password,
         this.name,
         this.role,
         this.superAdminName,
@@ -448,6 +576,7 @@ class UserModel {
     data['id'] = this.id;
     data['name'] = this.name;
     data['role'] = this.role;
+    data['password'] = this.password;
     data['superAdminName'] = this.superAdminName;
     data['AdminName'] = this.adminName;
     data['points'] = this.points;
@@ -528,6 +657,7 @@ class IndividualLearningModel {
   String information;
   String date;
 
+
   IndividualLearningModel(
       {this.id,
         this.playerId,
@@ -539,7 +669,16 @@ class IndividualLearningModel {
         this.social,
         this.tactical,
         this.information,
-        this.date});
+        this.date}) {
+    this.target  = "";
+    this.technical = "";
+    this.social = "";
+    this.physical = "";
+    this.psychology ="";
+    this.information  ="";
+    this.tactical ="";
+    this.date = "";
+  }
 
   IndividualLearningModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];

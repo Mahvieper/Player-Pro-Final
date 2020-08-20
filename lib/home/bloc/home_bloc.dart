@@ -35,10 +35,34 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     return token;
   }
 
+  _saveForgetClickedOff() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool forgetClicked;
+    forgetClicked = prefs.getBool('forgetClicked');
+    if( forgetClicked == null || forgetClicked == true) {
+      await prefs.setBool('forgetClicked', false);
+    }
+  }
+
+  _getForgetClicked() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool forgetClicked;
+    forgetClicked = prefs.getBool('forgetClicked');
+    return forgetClicked;
+  }
+
   @override
   Stream<HomeState> mapEventToState(HomeEvent event) async* {
     if(event is HomeInitEvent) {
       yield HomeInitial();
+      bool isForgetClicked = await _getForgetClicked();
+      if(isForgetClicked !=null && isForgetClicked) {
+        print("In Forget clicked");
+        yield ForgetClicked();
+        await _saveForgetClickedOff();
+      } else {
+        print("Not In Forget clicked");
+      }
     }
     else if (event is FetchPoints) {
       yield HomePointsLoading();
@@ -175,6 +199,25 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         yield ReportProbLoaded(userModel);
       } catch(error) {
         ContactUsError(error: error.toString());
+      }
+    } else if(event is UpdatePasswordEvent) {
+      yield UpdatePassLoading();
+      try {
+        yield UpdatePassLoaded(userModel);
+      } catch(error) {
+        yield UpdatePassError(error: error.toString());
+      }
+    } else if(event is UpdatePasswordRequested) {
+      yield UpdatePassRequestedLoading();
+
+      try {
+        String token = await _getToken();
+        String response = await userRepository.updatePassword(event.oldPass,event.newPass,token);
+        yield UpdatePassRequestedLoaded(this.userModel);
+        yield UpdatePassLoaded(userModel);
+      }catch(error) {
+        yield UpdatePassError(error: error.toString());
+        yield UpdatePassLoaded(userModel);
       }
     }
   }

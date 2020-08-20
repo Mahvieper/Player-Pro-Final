@@ -80,3 +80,18 @@ class IndividualLearningPlanDetail extends AdminHomeEvent {
   // TODO: implement props
   List<Object> get props => [];
 }
+
+class IndividualLearningPlanDetailSend extends AdminHomeEvent {
+  final IndividualLearningModel modelForPlayer;
+
+  IndividualLearningPlanDetailSend(this.modelForPlayer);
+  @override
+  // TODO: implement props
+  List<Object> get props => [modelForPlayer];
+}
+
+class GetHighScoreEvent extends AdminHomeEvent {
+  @override
+  // TODO: implement props
+  List<Object> get props => [];
+}

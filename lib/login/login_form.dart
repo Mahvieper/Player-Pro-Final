@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:player_pro_final/common/common.dart';
 import 'bloc/login_bloc.dart';
 
 class LoginForm extends StatefulWidget {
@@ -46,8 +47,8 @@ class _LoginFormState extends State<LoginForm> {
     final passwordField = TextFormField(
       onSaved: (val) => _pass = val,
       textAlign: TextAlign.center,
-      validator: (val) =>
-          val.length < 6 ? "Password cannot be less than 6" : null,
+     // validator: (val) =>
+       //   val.length < 6 ? "Password cannot be less than 6" : null,
       obscureText: true,
       style: TextStyle(color: Colors.white),
       decoration: InputDecoration(
@@ -65,6 +66,20 @@ class _LoginFormState extends State<LoginForm> {
           Scaffold.of(context).showSnackBar(
             SnackBar(
               content: Text('Incorrect Combination of Email and Password'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        } else if(state is ForgetLoaded) {
+          Scaffold.of(context).showSnackBar(
+            SnackBar(
+              content: Text("A newly generated password has been sent to your Email Id"),
+              backgroundColor: Colors.blueAccent,
+            ),
+          );
+        } else if(state is ForgetFailure) {
+          Scaffold.of(context).showSnackBar(
+            SnackBar(
+              content: Text("User Does not Exist with this Email please retry with a valid Email."),
               backgroundColor: Colors.red,
             ),
           );
@@ -93,7 +108,9 @@ class _LoginFormState extends State<LoginForm> {
                   ),
                 ],
               ),
-            );
+            ); else if(state is ForgetInProgress) {
+              return LoadingIndicator();
+          }
           else
             return SafeArea(
               child: Scaffold(
@@ -264,7 +281,18 @@ class _LoginFormState extends State<LoginForm> {
                                 ),
                                 //Forgot Password Button
                                 InkWell(
-                                  onTap: () {},
+                                  onTap: () {
+                                    if (formKey.currentState.validate()) {
+                                      formKey.currentState.save();
+                                      BlocProvider.of<LoginBloc>(context).add(
+                                        ForgetPressed(
+                                          username: _email,
+                                        ),
+                                      );
+                                    } else {
+
+                                    }
+                                  },
                                   child: Text(
                                     "FORGOT PASSWORD?",
                                       style: TextStyle( letterSpacing: 2,

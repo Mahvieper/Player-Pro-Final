@@ -120,6 +120,7 @@ class AdminHomeBloc extends Bloc<AdminHomeEvent,AdminHomeState> {
       try {
         String token = await _getToken();
         List<FetchPlayersModel> fetchPlayers = await userRepository.fetchPlayersUnderAdmin(token,userModel.id.toString());
+       this.fetchPlayersBloc = fetchPlayers;
         yield IndLearningLoaded(userModel,fetchPlayers);
       } catch (error) {
         yield IndLearningError(error: error.toString());
@@ -129,10 +130,48 @@ class AdminHomeBloc extends Bloc<AdminHomeEvent,AdminHomeState> {
       try {
         String token = await _getToken();
         IndividualLearningModel indiPlanForPlayer = await userRepository.getIndiPlanForPlayer(token,event.clickedPlayer.fields.id.toString());
-        yield IndLearningDetailLLoaded(userModel,indiPlanForPlayer);
+        yield IndLearningDetailLLoaded(userModel,indiPlanForPlayer,event.clickedPlayer);
       } catch (error) {
         yield IndLearningError(error: error.toString());
       }
+    } else if(event is IndividualLearningPlanDetailSend) {
+      yield IndLearningDetailSendLoading();
+      try {
+        String token = await _getToken();
+        IndividualLearningModel modelForPlayer = event.modelForPlayer;
+        Map data = {
+          "playerId":modelForPlayer.playerId,
+          "Name" : modelForPlayer.name,
+          "Target" : modelForPlayer.target,
+          "Technical" :modelForPlayer.technical,
+          "Physical" : modelForPlayer.physical,
+          "Psychology" : modelForPlayer.psychology,
+          "Social" : modelForPlayer.social,
+          "Tactical" : modelForPlayer.tactical,
+          "Information" : modelForPlayer.information
+        };
+        //encode Map to JSON
+        var body = json.encode(data);
+        IndividualLearningModel indiPlanForPlayer = await userRepository.postIndiPlanForPlayer(token,modelForPlayer.playerId.toString(),body);
+        yield IndLearningDetailLSendLoaded(userModel,indiPlanForPlayer);
+        yield IndLearningLoaded(userModel,this.fetchPlayersBloc);
+      } catch (error) {
+        yield IndLearningDetailSendError(error: error.toString());
+      }
+    } else if(event is GetHighScoreEvent) {
+      yield GetHighScoresLoading();
+
+      try {
+        String token = await _getToken();
+        print("Token from Bloc ===>" + token);
+        List<PlayerPoints> _playersList = await userRepository.getUsers(token,"Player");
+        print("Players List"+ _playersList.toString());
+        // List<UserModel> _playersList = new List<UserModel>();
+        yield GetHighScoresLoaded(_playersList);
+      } catch (error) {
+        yield GetHighScoresError(error: error.toString());
+      }
+
     }
   }
 }

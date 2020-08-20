@@ -17,6 +17,7 @@ class HomeInitial extends HomeState {
   @override
   List<Object> get props => [userModels];
 }
+class ForgetClicked extends HomeState {}
 
 class HomeInProgress extends HomeState {}
 
@@ -280,4 +281,62 @@ class ReportProbSuccess extends HomeState {
 
   @override
   String toString() => 'ReportProbSuccess { Response : $response }';
+}
+
+//--------------For Update Password Section-------------------------------
+class UpdatePassLoading extends HomeState {}
+
+class UpdatePassLoaded extends HomeState {
+  final UserModel userModels;
+
+  UpdatePassLoaded(this.userModels);
+  @override
+  List<Object> get props => [userModels];
+}
+
+class UpdatePassError extends HomeState {
+  final String error;
+
+  const UpdatePassError({@required this.error});
+
+  @override
+  List<Object> get props => [error];
+
+  @override
+  String toString() => 'ReportProbError { error: $error }';
+}
+
+class UpdatePassSuccess extends HomeState {
+  final String response;
+
+  const UpdatePassSuccess({@required this.response});
+
+  @override
+  List<Object> get props => [response];
+
+  @override
+  String toString() => 'ReportProbSuccess { Response : $response }';
+}
+
+//--------------For Update Password  Requested Section-------------------------------
+class UpdatePassRequestedLoading extends HomeState {}
+
+class UpdatePassRequestedLoaded extends HomeState {
+  final UserModel userModels;
+
+  UpdatePassRequestedLoaded(this.userModels);
+  @override
+  List<Object> get props => [userModels];
+}
+
+class UpdatePassRequestedError extends HomeState {
+  final String error;
+
+  const UpdatePassRequestedError({@required this.error});
+
+  @override
+  List<Object> get props => [error];
+
+  @override
+  String toString() => 'ReportProbError { error: $error }';
 }

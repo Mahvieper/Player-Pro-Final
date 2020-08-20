@@ -110,3 +110,19 @@ class ReportProbRequested extends HomeEvent {
   // TODO: implement props
   List<Object> get props => [userModel,name,title,problem];
 }
+
+class UpdatePasswordEvent extends HomeEvent {
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [];
+}
+
+class UpdatePasswordRequested extends HomeEvent {
+  final String oldPass,newPass;
+  const UpdatePasswordRequested(this.oldPass,this.newPass);
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [oldPass,newPass];
+}

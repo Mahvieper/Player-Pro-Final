@@ -6,6 +6,7 @@ import 'package:player_pro_final/home/PracticePage.dart';
 import 'package:player_pro_final/home/bloc/home_bloc.dart';
 import 'package:player_pro_final/home/bloc/home_event.dart';
 import 'package:player_pro_final/home/bloc/home_state.dart';
+import 'package:player_pro_final/home/update_password.dart';
 import 'package:user_repository/user_repository.dart';
 
 import 'ContactUs.dart';
@@ -134,13 +135,37 @@ class HomePage extends StatelessWidget {
           ));
     }
 
+
+    void _showDialog() {
+      // flutter defined function
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          // return object of type Dialog
+          return AlertDialog(
+            title: new Text("Note !!"),
+            content: new Text("You can Change/Update your Password from the Hamburger Menu in the Top Left Corner"),
+            actions: <Widget>[
+              // usually buttons at the bottom of the dialog
+              new FlatButton(
+                child: new Text("Close"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+
     return BlocProvider(
         create: (context) {
           return HomeBloc(
             userModel: userModel,
             authenticationBloc: BlocProvider.of<AuthenticationBloc>(context),
             userRepository: userRepository,
-          );
+          )..add(HomeInitEvent());
         },
           child: SafeArea(
               child: Scaffold(
@@ -203,7 +228,30 @@ class HomePage extends StatelessWidget {
                                       userModel, userRepository)));
                             },
                           ),
-                        )
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Container(
+                          padding: EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Color(0xFFbf2431),
+                              )),
+                          child: ListTile(
+                            leading: Text("Update Password",
+                                style: TextStyle(
+                                    color: Color.fromRGBO(211, 172, 43, 1),
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: "MontserratRegular")),
+                            onTap: () {
+                              Navigator.of(context).push(new MaterialPageRoute(
+                                  builder: (_) => UpdatePasswordPage(
+                                      userModel, userRepository)));
+                            },
+                          ),
+                        ),
+
                       ],
                     ),
                   )),
@@ -231,6 +279,8 @@ class HomePage extends StatelessWidget {
                       backgroundColor: Colors.red,
                     ),
                   );
+                } else if(state is ForgetClicked) {
+                  _showDialog();
                 }
 
               },

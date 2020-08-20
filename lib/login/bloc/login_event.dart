@@ -20,3 +20,18 @@ class LoginButtonPressed extends LoginEvent {
   String toString() =>
       'LoginButtonPressed { username: $username, password: $password }';
 }
+
+class ForgetPressed extends LoginEvent {
+  final String username;
+
+  const ForgetPressed({
+    @required this.username,
+  });
+
+  @override
+  List<Object> get props => [username];
+
+  @override
+  String toString() =>
+      'ForgetPressed { username: $username }';
+}

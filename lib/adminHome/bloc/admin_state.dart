@@ -186,7 +186,8 @@ class IndLearningDetailLoading extends AdminHomeState {}
 class IndLearningDetailLLoaded extends AdminHomeState {
   final UserModel userModels;
   final IndividualLearningModel indiPlanForPlayer;
-  IndLearningDetailLLoaded(this.userModels,this.indiPlanForPlayer);
+  final FetchPlayersModel clickedPlayer;
+  IndLearningDetailLLoaded(this.userModels,this.indiPlanForPlayer,this.clickedPlayer);
   @override
   List<Object> get props => [userModels,indiPlanForPlayer];
 }
@@ -201,4 +202,50 @@ class IndLearningDetailLError extends AdminHomeState {
 
   @override
   String toString() => 'IndLearningDetailLError { error: $error }';
+}
+
+//--------------For Individual Learning Plan Section-------------------------------
+class IndLearningDetailSendLoading extends AdminHomeState {}
+
+class IndLearningDetailLSendLoaded extends AdminHomeState {
+  final UserModel userModels;
+  final IndividualLearningModel indiPlanForPlayer;
+  IndLearningDetailLSendLoaded(this.userModels,this.indiPlanForPlayer);
+  @override
+  List<Object> get props => [userModels,indiPlanForPlayer];
+}
+
+class IndLearningDetailSendError extends AdminHomeState {
+  final String error;
+
+  const IndLearningDetailSendError({@required this.error});
+
+  @override
+  List<Object> get props => [error];
+
+  @override
+  String toString() => 'IndLearningDetailLError { error: $error }';
+}
+
+//--------------For Get HighScores Section-------------------------------
+class GetHighScoresLoading extends AdminHomeState {}
+
+class GetHighScoresLoaded extends AdminHomeState {
+  final List<PlayerPoints> userModels;
+
+  GetHighScoresLoaded(this.userModels);
+  @override
+  List<Object> get props => [userModels];
+}
+
+class GetHighScoresError extends AdminHomeState {
+  final String error;
+
+  const GetHighScoresError({@required this.error});
+
+  @override
+  List<Object> get props => [error];
+
+  @override
+  String toString() => 'GetHighScoresError { error: $error }';
 }

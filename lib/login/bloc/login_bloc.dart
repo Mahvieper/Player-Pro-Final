@@ -23,6 +23,15 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     }
   }
 
+  _saveForgetClicked() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool forgetClicked;
+    forgetClicked = prefs.getBool('forgetClicked');
+    if( forgetClicked == null || forgetClicked == false) {
+      await prefs.setBool('forgetClicked', true);
+    }
+  }
+
   LoginBloc({
     @required this.userRepository,
     @required this.authenticationBloc,
@@ -45,6 +54,18 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         yield LoginInitial();
       } catch (error) {
         yield LoginFailure(error: error.toString());
+      }
+    } else  if (event is ForgetPressed) {
+      yield ForgetInProgress();
+
+      try {
+        String forgetResponse = await userRepository.forgetPasssword(event.username);
+        yield ForgetLoaded(forgetResponse);
+        yield LoginInitial();
+        await _saveForgetClicked();
+        print("ForgetClicked Saved");
+      } catch (error) {
+        yield ForgetFailure(error: error.toString());
       }
     }
   }

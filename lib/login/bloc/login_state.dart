@@ -22,3 +22,25 @@ class LoginFailure extends LoginState {
   @override
   String toString() => 'LoginFailure { error: $error }';
 }
+
+class ForgetInitial extends LoginState {}
+
+class ForgetInProgress extends LoginState {}
+
+class ForgetLoaded extends LoginState {
+  final String forgetResponse;
+
+  ForgetLoaded(this.forgetResponse);
+}
+
+class ForgetFailure extends LoginState {
+  final String error;
+
+  const ForgetFailure({@required this.error});
+
+  @override
+  List<Object> get props => [error];
+
+  @override
+  String toString() => 'ForgetFailure { error: $error }';
+}
