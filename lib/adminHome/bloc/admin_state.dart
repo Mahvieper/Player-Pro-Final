@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 import 'package:player_pro_final/model/model.dart';
 import 'package:user_repository/user_repository.dart';
 import 'package:user_repository/fetchPlayersModel.dart';
+import 'package:user_repository/IndividualPlayersModel.dart';
 abstract class AdminHomeState extends Equatable {
   const AdminHomeState();
 
@@ -179,6 +180,35 @@ class IndLearningError extends AdminHomeState {
   String toString() => 'IndLearningError { error: $error }';
 }
 
+//--------------For Individual Learning Plan Saved List on Various Dates Section-------------------------------
+class IndividualLearningPlanSavedListLoading extends AdminHomeState {}
+
+class IndividualLearningPlanSavedListLoaded extends AdminHomeState {
+  final UserModel userModels;
+  final List<IndividualLearningModel> indiPlanForPlayerList;
+  final FetchPlayersModel clickedPlayer;
+  IndividualLearningPlanSavedListLoaded(this.userModels,this.indiPlanForPlayerList,this.clickedPlayer);
+  @override
+  List<Object> get props => [userModels,indiPlanForPlayerList,clickedPlayer];
+}
+
+class SnackBarLoaded extends AdminHomeState {
+  final String error;
+
+  const SnackBarLoaded({@required this.error});
+}
+
+class IndividualLearningPlanSavedListError extends AdminHomeState {
+  final String error;
+
+  const IndividualLearningPlanSavedListError({@required this.error});
+
+  @override
+  List<Object> get props => [error];
+
+  @override
+  String toString() => 'IndLearningDetailLError { error: $error }';
+}
 
 //--------------For Individual Learning Plan Section-------------------------------
 class IndLearningDetailLoading extends AdminHomeState {}
@@ -203,6 +233,8 @@ class IndLearningDetailLError extends AdminHomeState {
   @override
   String toString() => 'IndLearningDetailLError { error: $error }';
 }
+
+
 
 //--------------For Individual Learning Plan Section-------------------------------
 class IndLearningDetailSendLoading extends AdminHomeState {}

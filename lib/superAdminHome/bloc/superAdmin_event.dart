@@ -71,3 +71,9 @@ class AddNewUserAdminCreateEvent extends SuperAdminHomeEvent {
   // TODO: implement props
   List<Object> get props => [createAdmin];
 }
+
+class UploadVideosPageEvent extends SuperAdminHomeEvent {
+  @override
+  // TODO: implement props
+  List<Object> get props => [];
+}

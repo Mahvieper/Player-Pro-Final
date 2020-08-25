@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:user_repository/fetchPlayersModel.dart';
 import 'package:user_repository/user_repository.dart';
-
+import 'package:user_repository/IndividualPlayersModel.dart';
 
 abstract class AdminHomeEvent extends Equatable {
   const AdminHomeEvent();
@@ -51,7 +51,8 @@ class AssignVideosEvent extends AdminHomeEvent {
 class AssignVideosToPlayerEvent extends AdminHomeEvent {
   final FetchPlayersModel playerClicked;
   final String videoUrl;
-  AssignVideosToPlayerEvent(this.playerClicked,this.videoUrl);
+  final VideoModel videoModel;
+  AssignVideosToPlayerEvent(this.playerClicked,this.videoUrl,this.videoModel);
   @override
   // TODO: implement props
   List<Object> get props => throw UnimplementedError();
@@ -72,10 +73,26 @@ class IndividualLearningPlan extends AdminHomeEvent {
   List<Object> get props => [];
 }
 
+class IndividualLearningPlanSavedList extends AdminHomeEvent {
+  final FetchPlayersModel clickedPlayer;
+  IndividualLearningPlanSavedList(this.clickedPlayer);
+  @override
+  // TODO: implement props
+  List<Object> get props => [];
+}
+
 class IndividualLearningPlanDetail extends AdminHomeEvent {
   final FetchPlayersModel clickedPlayer;
+  final IndividualLearningModel clickedIndiDateModel;
+  IndividualLearningPlanDetail(this.clickedPlayer,this.clickedIndiDateModel);
+  @override
+  // TODO: implement props
+  List<Object> get props => [];
+}
 
-  IndividualLearningPlanDetail(this.clickedPlayer);
+class SnackBarEvent extends AdminHomeEvent {
+  final String message;
+  SnackBarEvent(this.message);
   @override
   // TODO: implement props
   List<Object> get props => [];

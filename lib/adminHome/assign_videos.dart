@@ -21,6 +21,7 @@ class _AssignVideoPageState extends State<AssignVideoPage> {
   List<bool> isSelected = [];
 
   String videoUrl;
+  VideoModel videoModel;
 
   String playerClickedCheckColor = "";
   FetchPlayersModel playerClicked;
@@ -52,6 +53,13 @@ class _AssignVideoPageState extends State<AssignVideoPage> {
                 Scaffold.of(context).showSnackBar(
                   SnackBar(
                     content: Text("Player Assigned with the Video"),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              } else if(state is AssignPointsToPlayerError) {
+                Scaffold.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.error.toString()),
                     backgroundColor: Colors.red,
                   ),
                 );
@@ -146,10 +154,13 @@ class _AssignVideoPageState extends State<AssignVideoPage> {
                                                               prevIndex = index;
                                                               playerClicked = state.fetchPlayers[clickedPlayerId];
                                                               videoUrl = state.videosList[index].videoLink;
+                                                              videoModel = new VideoModel();
+                                                              videoModel = state.videosList[index];
                                                             } else {
                                                               isSelected[index] = false;
                                                               playerClicked = null;
                                                               videoUrl = null;
+                                                              videoModel = null;
                                                             }
                                                           //  clickedPlayerId = null;
                                                             playerClickedCheckColor = state.fetchPlayers[clickedPlayerId].fields.name;
@@ -181,8 +192,8 @@ class _AssignVideoPageState extends State<AssignVideoPage> {
                                                     child:Text("ASSIGN",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontFamily: "MontserratRegular",
                                                         letterSpacing: 3),),
                                                     onPressed: () {
-                                                      if(playerClicked !=null && videoUrl !=null)
-                                                    BlocProvider.of<AdminHomeBloc>(context).add(AssignVideosToPlayerEvent(playerClicked,videoUrl));
+                                                      if(playerClicked !=null && videoUrl !=null && videoModel !=null)
+                                                    BlocProvider.of<AdminHomeBloc>(context).add(AssignVideosToPlayerEvent(playerClicked,videoUrl,videoModel));
                                                       else
                                                     BlocProvider.of<AdminHomeBloc>(context).add(AssignVideosToPlayerErrorEvent("Please Select a Video for Assignment"));
                                                     },

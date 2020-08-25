@@ -9,7 +9,7 @@ import 'package:user_repository/user_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:player_pro_final/model/model.dart';
-
+import 'package:user_repository/IndividualPlayersModel.dart';
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final UserRepository userRepository;
   final UserModel userModel;
@@ -71,12 +71,21 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       } catch (error) {
         yield HomePointsError(error: error.toString());
       }
+    }  else if(event is IndividualLearningPlanSavedListEvent) {
+      yield IndLearningSavedListLoading();
+      try {
+        String token = await _getToken();
+        List<IndividualLearningModel> indiLearnList = await userRepository.getIndiPlanForPlayer(token,this.userModel.id.toString());
+        yield IndLearningSavedListLoaded(userModel,indiLearnList);
+      } catch (error) {
+        yield IndLearningSavedListError(error: error.toString());
+      }
     } else if(event is IndividualLearningPlan) {
       yield IndLearningLoading();
       try {
         String token = await _getToken();
-        List<IndividualLearningModel> indiLearnList = await userRepository.getIndiPlan(token);
-        yield IndLearningLoaded(userModel,indiLearnList);
+        IndividualLearningModel indiLearnModel = event.indiModel;
+        yield IndLearningLoaded(userModel,indiLearnModel);
       } catch (error) {
         yield IndLearningError(error: error.toString());
       }
@@ -153,9 +162,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       }catch (error) {
         yield ItemPurchasedError(error: error.toString());
       }
-    } else if(event is PracticeEvent) {
-
-    } else if(event is ContactUsEvent) {
+    }  else if(event is ContactUsEvent) {
       yield ContactUsLoading();
 
       try {
@@ -218,6 +225,25 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       }catch(error) {
         yield UpdatePassError(error: error.toString());
         yield UpdatePassLoaded(userModel);
+      }
+    } else if(event is PracticeCompletedEvent) {
+      yield PracticeCompletedLoading();
+
+      try {
+        String token = await _getToken();
+        Map data = {
+          "isComplete": true,
+        };
+        //encode Map to JSON
+        var body = json.encode(data);
+
+        UserModel userModelResponse  = await userRepository.updateUser(token,this.userModel.id.toString(),body);
+        yield PracticeCompletedLoaded(userModelResponse);
+        //yield UpdatePassLoaded(userModel);
+      }catch(error) {
+        yield PracticeCompletedError(error: error.toString());
+        yield PracticeCompletedLoaded(this.userModel);
+       // yield UpdatePassLoaded(userModel);
       }
     }
   }

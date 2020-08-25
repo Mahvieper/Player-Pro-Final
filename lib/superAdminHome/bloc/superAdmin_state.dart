@@ -209,3 +209,25 @@ class AddNewUserAdminCreateError extends SuperAdminHomeState {
   @override
   String toString() => 'AddNewUserAdminCreateError { error: $error }';
 }
+
+//---------------------Upload Videos HomePage---------------------------------------------
+class UploadVideosPageLoading extends SuperAdminHomeState {}
+
+class UploadVideosPageLoaded extends SuperAdminHomeState {
+  final UserModel createdAdmin;
+  UploadVideosPageLoaded(this.createdAdmin);
+  @override
+  List<Object> get props => [createdAdmin];
+}
+
+class UploadVideosPageError extends SuperAdminHomeState {
+  final String error;
+
+  const UploadVideosPageError({@required this.error});
+
+  @override
+  List<Object> get props => [error];
+
+  @override
+  String toString() => 'AddNewUserAdminCreateError { error: $error }';
+}

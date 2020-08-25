@@ -338,7 +338,7 @@ class HomePage extends StatelessWidget {
                               ),
                               InkWell(
                                 onTap: () {
-                              Navigator.of(context).push(new MaterialPageRoute(builder: (_) => PracticePage(userModel)));
+                              Navigator.of(context).push(new MaterialPageRoute(builder: (_) => PracticePage(userModel,userRepository)));
                                 },
                                 child: Container(
                                     margin: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.1, 10, MediaQuery.of(context).size.width * 0.1, 0),
@@ -347,7 +347,7 @@ class HomePage extends StatelessWidget {
                               InkWell(
                                 onTap: () {
                                   BlocProvider.of<HomeBloc>(context)
-                                      .add(IndividualLearningPlan());
+                                      .add(IndividualLearningPlanSavedListEvent());
                                 },
                                 child: Container(
                                     margin: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.1, 10, MediaQuery.of(context).size.width * 0.1, 0),
@@ -709,6 +709,139 @@ class HomePage extends StatelessWidget {
                         ],
                       ),
                     );
+                  }  else if (state is IndLearningSavedListLoading) {
+                    return LoadingIndicator();
+                  } else if(state is IndLearningSavedListLoaded) {
+                    return WillPopScope(
+                      onWillPop: () {
+                        BlocProvider.of<HomeBloc>(context)
+                            .add(HomeInitEvent());
+                      },
+                      child: Stack(
+                        children: [
+                          Container(
+                            decoration: new BoxDecoration(
+                              image: new DecorationImage(
+                                image: new AssetImage("assets/homeBack.png"),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: IconButton(
+                                icon: Icon(Icons.arrow_back,color: Colors.white,),
+                                onPressed: () {
+                                  BlocProvider.of<HomeBloc>(context).add(HomeInitEvent());
+                                },
+                              ),
+                            ),
+                          ),
+
+                          Container(
+                            //  margin: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.1, 10, MediaQuery.of(context).size.width * 0.1, 0),
+                              margin: EdgeInsets.fromLTRB(
+                                  MediaQuery.of(context).size.width * 0.1,
+                                  MediaQuery.of(context).size.height * 0.2,
+                                  MediaQuery.of(context).size.width * 0.1,
+                                  0),
+                              child: Image.asset("assets/MyPlayersTitle.png")),
+                          //Show List of Players Under the Admin.
+                          Container(
+                            margin: EdgeInsets.fromLTRB(
+                                MediaQuery.of(context).size.width * 0.1,
+                                MediaQuery.of(context).size.height * 0.28,
+                                MediaQuery.of(context).size.width * 0.1,
+                                0),
+                            child: ListView.builder(
+                                itemCount: state.indiLearnList.length,
+                                itemBuilder: (context, index) {
+                                  return InkWell(
+                                    onTap: () {
+                                      // BlocProvider.of<AdminHomeBloc>(context).add(IndividualLearningPlanDetail(state.fetchPlayers[index]));
+                                      BlocProvider.of<HomeBloc>(context).add(IndividualLearningPlan(state.indiLearnList[index]));
+                                    },
+                                    child: Container(
+                                        margin: EdgeInsets.only(top: 5),
+                                        decoration: BoxDecoration(
+                                          border: (index % 2 == 0)
+                                              ? Border.all(
+                                              color: Color(0xFFbf2431))
+                                              : Border.all(
+                                              color: Color.fromRGBO(
+                                                  211, 172, 43, 1)),
+                                        ),
+                                        child: Padding(
+                                          padding: EdgeInsets.all(20),
+                                          child: Center(
+                                            child: (index % 2 == 0)
+                                                ? Text(
+                                              state.indiLearnList[index]
+                                                  .fields.date
+                                                  .toUpperCase(),
+                                              style: TextStyle(
+                                                  fontWeight:
+                                                  FontWeight.bold,
+                                                  fontFamily:
+                                                  "MontserratRegular",
+                                                  fontSize: 18,
+                                                  color: Color.fromRGBO(
+                                                      211, 172, 43, 1)),
+                                            )
+                                                : Text(
+                                              state.indiLearnList[index]
+                                                  .fields.date
+                                                  .toUpperCase(),
+                                              style: TextStyle(
+                                                  fontWeight:
+                                                  FontWeight.bold,
+                                                  fontFamily:
+                                                  "MontserratRegular",
+                                                  fontSize: 18,
+                                                  color: Color(0xFFbf2431)),
+                                            ),
+                                          ),
+                                        )),
+                                  );
+                                }),
+                          ),
+
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: InkWell(
+                              onTap: () {
+                                BlocProvider.of<HomeBloc>(context)
+                                    .add(HomeInitEvent());
+                              },
+                              child: Container(
+                                width: MediaQuery.of(context).size.width / 3,
+                                decoration: BoxDecoration(
+                                    color: Color.fromRGBO(211, 172, 43, 1)),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Container(
+                                      margin: EdgeInsets.only(
+                                          left: MediaQuery.of(context)
+                                              .size
+                                              .width *
+                                              0.08),
+                                      child: Text(
+                                        "HOME",
+                                        style: TextStyle(
+                                            color: Color(0xFF0f3a3f),
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: "MontserratRegular"),
+                                      )),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    );
                   } else if (state is IndLearningLoading) {
                     return LoadingIndicator();
                   } else if (state is IndLearningLoaded) {
@@ -726,6 +859,21 @@ class HomePage extends StatelessWidget {
                               ),
                             ),
                           ),
+
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: IconButton(
+                                icon: Icon(Icons.arrow_back,color: Colors.white,),
+                                onPressed: () {
+                                  BlocProvider.of<HomeBloc>(context)
+                                      .add(IndividualLearningPlanSavedListEvent());
+                                },
+                              ),
+                            ),
+                          ),
+
                           Container(
                             margin: EdgeInsets.only(
                                 top: MediaQuery.of(context).size.height * 0.18),
@@ -735,19 +883,19 @@ class HomePage extends StatelessWidget {
                                 itemBuilder: (context, index) {
                                   String desc="";
                                   if(IndList[index].contains("TARGET"))
-                                    desc = state.indiLearnList[0].target;
+                                    desc = state.indiLearnList.fields.target;
                                   else if(IndList[index].contains("TECHNICAL"))
-                                    desc = state.indiLearnList[0].technical;
+                                    desc = state.indiLearnList.fields.technical;
                                   else if(IndList[index].contains("PHYSICAL"))
-                                    desc = state.indiLearnList[0].physical;
+                                    desc = state.indiLearnList.fields.physical;
                                   else if(IndList[index].contains("PSYCHOLOGICAL"))
-                                    desc = state.indiLearnList[0].psychology;
+                                    desc = state.indiLearnList.fields.psychology;
                                   else if(IndList[index].contains("SOCIAL"))
-                                    desc = state.indiLearnList[0].social;
+                                    desc = state.indiLearnList.fields.social;
                                   else if(IndList[index].contains("TACTICAL"))
-                                    desc = state.indiLearnList[0].tactical;
+                                    desc = state.indiLearnList.fields.tactical;
                                   else
-                                    desc = state.indiLearnList[0].information;
+                                    desc = state.indiLearnList.fields.information;
                                   return buildInd(IndList[index],desc);
                                 }),
                           ),
@@ -783,7 +931,7 @@ class HomePage extends StatelessWidget {
                                           )),
                                       InkWell(
                                         onTap: () {
-                                          Navigator.of(context).push(new MaterialPageRoute(builder: (_) => PracticePage(userModel)));
+                                          Navigator.of(context).push(new MaterialPageRoute(builder: (_) => PracticePage(userModel,userRepository)));
                                         },
                                         child: Image.asset(
                                           "assets/myPractice.png",
@@ -893,6 +1041,20 @@ class HomePage extends StatelessWidget {
                                   ),
                                 ),
                               ),
+
+                              Align(
+                                alignment: Alignment.topLeft,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: IconButton(
+                                    icon: Icon(Icons.arrow_back,color: Colors.white,),
+                                    onPressed: () {
+                                      BlocProvider.of<HomeBloc>(context).add(HomeInitEvent());
+                                    },
+                                  ),
+                                ),
+                              ),
+
                               Align(
                                 alignment: Alignment.center,
                                 child: Stack(
@@ -1257,7 +1419,7 @@ class HomePage extends StatelessWidget {
                                           )),
                                       InkWell(
                                         onTap: () {
-                                          Navigator.of(context).push(new MaterialPageRoute(builder: (_) => PracticePage(userModel)));
+                                          Navigator.of(context).push(new MaterialPageRoute(builder: (_) => PracticePage(userModel,userRepository)));
                                         },
                                         child: Image.asset(
                                           "assets/myPractice.png",
@@ -1751,12 +1913,18 @@ class HomePage extends StatelessWidget {
                                     margin: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.1, 10, MediaQuery.of(context).size.width * 0.1, 0),
                                     child: Image.asset("assets/myPoints.png")),
                               ),
-                              Container(
-                                  margin: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.1, 10, MediaQuery.of(context).size.width * 0.1, 0),
-                                  child: Image.asset("assets/myShop.png")),
                               InkWell(
                                 onTap: () {
-                                  Navigator.of(context).push(new MaterialPageRoute(builder: (_) => PracticePage(userModel)));
+                                  BlocProvider.of<HomeBloc>(context)
+                                      .add(ShopEvent());
+                                },
+                                child: Container(
+                                    margin: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.1, 10, MediaQuery.of(context).size.width * 0.1, 0),
+                                    child: Image.asset("assets/myShop.png")),
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  Navigator.of(context).push(new MaterialPageRoute(builder: (_) => PracticePage(userModel,userRepository)));
                                 },
                                 child: Container(
                                     margin: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.1, 10, MediaQuery.of(context).size.width * 0.1, 0),
@@ -1765,7 +1933,7 @@ class HomePage extends StatelessWidget {
                               InkWell(
                                 onTap: () {
                                   BlocProvider.of<HomeBloc>(context)
-                                      .add(IndividualLearningPlan());
+                                      .add(IndividualLearningPlanSavedListEvent());
                                 },
                                 child: Container(
                                     margin: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.1, 10, MediaQuery.of(context).size.width * 0.1, 0),

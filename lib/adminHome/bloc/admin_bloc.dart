@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:user_repository/IndividualPlayersModel.dart';
 import 'package:flutter/material.dart';
 import 'package:player_pro_final/adminHome/bloc/admin_event.dart';
 import 'package:player_pro_final/adminHome/bloc/admin_state.dart';
@@ -15,7 +15,8 @@ class AdminHomeBloc extends Bloc<AdminHomeEvent,AdminHomeState> {
   final AuthenticationBloc authenticationBloc;
   List<FetchPlayersModel> fetchPlayersBloc;
   List<VideoModel> assignedPointsPlayer;
-
+  List<IndividualLearningModel> plansList;
+  FetchPlayersModel clickedPlayer;
   AdminHomeBloc({
     @required this.userRepository,
     @required this.userModel,
@@ -94,19 +95,34 @@ class AdminHomeBloc extends Bloc<AdminHomeEvent,AdminHomeState> {
       try {
         FetchPlayersModel playerClicked = event.playerClicked;
         Map data = {
-          "videoUrl":event.videoUrl
+          "videoUrl":event.videoUrl,
+          "isComplete" : false,
+          "videoId" : event.videoModel.id
         };
+
+       /* Map dataForAllotment = {
+          "assigName":event.videoModel.name,
+          "playerName" : event.playerClicked.fields.name,
+          "playerId" : event.playerClicked.fields.id,
+          "assignByName" : userModel.name,
+          "assignById" : userModel.id,
+          "assignLink" : event.videoModel.videoLink,
+          "assigId" : event.videoModel.id,
+          "assignStatus" : false,
+        };*/
         //encode Map to JSON
         var body = json.encode(data);
-
+       // var bodyForAllotment = json.encode(dataForAllotment);
         print(playerClicked.toString());
         print(event.videoUrl);
         UserModel player = await userRepository.updateUser(token, playerClicked.fields.id.toString(), body);
-
+       // AllotModel playerAllotedAssignment = await userRepository.postAllotmentToPlayer(token,playerClicked.fields.id.toString(),bodyForAllotment);
+       // print(playerAllotedAssignment);
         yield AssignVideosToPlayerLoaded(player);
         yield AssignVideosLoaded(this.assignedPointsPlayer,this.fetchPlayersBloc);
       } catch(error) {
         yield AssignPointsToPlayerError(error: error.toString());
+        yield AssignVideosLoaded(this.assignedPointsPlayer,this.fetchPlayersBloc);
       }
     }  else if(event is AssignVideosToPlayerErrorEvent) {
       try {
@@ -125,34 +141,70 @@ class AdminHomeBloc extends Bloc<AdminHomeEvent,AdminHomeState> {
       } catch (error) {
         yield IndLearningError(error: error.toString());
       }
-    } else if(event is IndividualLearningPlanDetail) {
+    }  else if(event is IndividualLearningPlanSavedList) {
+      yield IndividualLearningPlanSavedListLoading();
+      try {
+        String token = await _getToken();
+        List<IndividualLearningModel> indiPlanForPlayer = await userRepository.getIndiPlanForPlayer(token,event.clickedPlayer.fields.id.toString());
+        this.plansList = indiPlanForPlayer;
+        this.clickedPlayer = event.clickedPlayer;
+        yield IndividualLearningPlanSavedListLoaded(userModel,indiPlanForPlayer,event.clickedPlayer);
+      } catch (error) {
+        yield IndLearningError(error: error.toString());
+      }
+    }
+
+    else if(event is IndividualLearningPlanDetail) {
       yield IndLearningDetailLoading();
       try {
         String token = await _getToken();
-        IndividualLearningModel indiPlanForPlayer = await userRepository.getIndiPlanForPlayer(token,event.clickedPlayer.fields.id.toString());
-        yield IndLearningDetailLLoaded(userModel,indiPlanForPlayer,event.clickedPlayer);
+       // List<IndividualLearningModel> indiPlanForPlayer = await userRepository.getIndiPlanForPlayer(token,event.clickedPlayer.fields.id.toString());
+        yield IndLearningDetailLLoaded(userModel,event.clickedIndiDateModel,event.clickedPlayer);
       } catch (error) {
         yield IndLearningError(error: error.toString());
       }
     } else if(event is IndividualLearningPlanDetailSend) {
+
       yield IndLearningDetailSendLoading();
       try {
         String token = await _getToken();
         IndividualLearningModel modelForPlayer = event.modelForPlayer;
-        Map data = {
-          "playerId":modelForPlayer.playerId,
-          "Name" : modelForPlayer.name,
-          "Target" : modelForPlayer.target,
-          "Technical" :modelForPlayer.technical,
-          "Physical" : modelForPlayer.physical,
-          "Psychology" : modelForPlayer.psychology,
-          "Social" : modelForPlayer.social,
-          "Tactical" : modelForPlayer.tactical,
-          "Information" : modelForPlayer.information
+        Map data;
+        if (modelForPlayer.pk == -1) {
+          data = {
+            "playerId": modelForPlayer.fields.playerId,
+            "Name": modelForPlayer.fields.name,
+            "Target": modelForPlayer.fields.target,
+            "Technical": modelForPlayer.fields.technical,
+            "Physical": modelForPlayer.fields.physical,
+            "Psychology": modelForPlayer.fields.psychology,
+            "Social": modelForPlayer.fields.social,
+            "Tactical": modelForPlayer.fields.tactical,
+            "Information": modelForPlayer.fields.information,
+          };
+        } else {
+         data = {
+          "playerId": modelForPlayer.fields.playerId,
+          "Name": modelForPlayer.fields.name,
+          "Target": modelForPlayer.fields.target,
+          "Technical": modelForPlayer.fields.technical,
+          "Physical": modelForPlayer.fields.physical,
+          "Psychology": modelForPlayer.fields.psychology,
+          "Social": modelForPlayer.fields.social,
+          "Tactical": modelForPlayer.fields.tactical,
+          "Information": modelForPlayer.fields.information,
+          "date": modelForPlayer.fields.date,
+          "id": modelForPlayer.fields.id
         };
+      }
         //encode Map to JSON
-        var body = json.encode(data);
-        IndividualLearningModel indiPlanForPlayer = await userRepository.postIndiPlanForPlayer(token,modelForPlayer.playerId.toString(),body);
+        var body =  json.encode(data);
+        // = json.encode(data);
+        IndividualLearningModel indiPlanForPlayer;
+        if(modelForPlayer.pk == -1)
+          indiPlanForPlayer = await userRepository.postIndiPlanForPlayer(token,modelForPlayer.fields.playerId.toString(),body);
+        else
+          indiPlanForPlayer = await userRepository.putIndiPlanForPlayer(token,modelForPlayer.fields.playerId.toString(),body);
         yield IndLearningDetailLSendLoaded(userModel,indiPlanForPlayer);
         yield IndLearningLoaded(userModel,this.fetchPlayersBloc);
       } catch (error) {
@@ -172,6 +224,9 @@ class AdminHomeBloc extends Bloc<AdminHomeEvent,AdminHomeState> {
         yield GetHighScoresError(error: error.toString());
       }
 
+    } else if(event is SnackBarEvent) {
+      yield SnackBarLoaded(error: event.message.toString());
+      yield IndividualLearningPlanSavedListLoaded(this.userModel,this.plansList,this.clickedPlayer);
     }
   }
 }

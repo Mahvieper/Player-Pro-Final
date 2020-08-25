@@ -2,6 +2,7 @@
 import 'package:player_pro_final/model/model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
+import 'package:user_repository/IndividualPlayersModel.dart';
 import 'package:user_repository/user_repository.dart';
 
 abstract class HomeEvent extends Equatable {
@@ -62,8 +63,16 @@ class PracticeEvent extends HomeEvent {
   List<Object> get props => [];
 }
 
-class IndividualLearningPlan extends HomeEvent {
+class IndividualLearningPlanSavedListEvent extends HomeEvent {
 
+  @override
+  // TODO: implement props
+  List<Object> get props => [];
+}
+
+class IndividualLearningPlan extends HomeEvent {
+ final IndividualLearningModel indiModel;
+  const IndividualLearningPlan(this.indiModel);
   @override
   // TODO: implement props
   List<Object> get props => [];
@@ -125,4 +134,10 @@ class UpdatePasswordRequested extends HomeEvent {
   @override
   // TODO: implement props
   List<Object> get props => [oldPass,newPass];
+}
+
+class PracticeCompletedEvent extends HomeEvent {
+  @override
+  // TODO: implement props
+  List<Object> get props => [];
 }

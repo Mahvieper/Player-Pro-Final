@@ -3,6 +3,8 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:player_pro_final/model/model.dart';
 import 'package:user_repository/user_repository.dart';
+import 'package:user_repository/IndividualPlayersModel.dart';
+
 abstract class HomeState extends Equatable {
   const HomeState();
 
@@ -147,12 +149,58 @@ class PracticeError extends HomeState {
   @override
   String toString() => 'PracticeError { error: $error }';
 }
+
+//--------------For Practice Section-------------------------------
+class PracticeCompletedLoading extends HomeState {}
+
+class PracticeCompletedLoaded extends HomeState {
+  final UserModel userModels;
+
+  PracticeCompletedLoaded(this.userModels);
+  @override
+  List<Object> get props => [userModels];
+}
+
+class PracticeCompletedError extends HomeState {
+  final String error;
+
+  const PracticeCompletedError({@required this.error});
+
+  @override
+  List<Object> get props => [error];
+
+  @override
+  String toString() => 'PracticeCompletedError { error: $error }';
+}
+
+//--------------For Individual Learning Plan Saved List Section-------------------------------
+class IndLearningSavedListLoading extends HomeState {}
+
+class IndLearningSavedListLoaded extends HomeState {
+  final UserModel userModels;
+  final List<IndividualLearningModel> indiLearnList;
+  IndLearningSavedListLoaded(this.userModels,this.indiLearnList);
+  @override
+  List<Object> get props => [userModels];
+}
+
+class IndLearningSavedListError extends HomeState {
+  final String error;
+
+  const IndLearningSavedListError({@required this.error});
+
+  @override
+  List<Object> get props => [error];
+
+  @override
+  String toString() => 'IndLearningSavedListError { error: $error }';
+}
 //--------------For Individual Learning Plan Section-------------------------------
 class IndLearningLoading extends HomeState {}
 
 class IndLearningLoaded extends HomeState {
   final UserModel userModels;
-  final List<IndividualLearningModel> indiLearnList;
+  final IndividualLearningModel indiLearnList;
   IndLearningLoaded(this.userModels,this.indiLearnList);
   @override
   List<Object> get props => [userModels];

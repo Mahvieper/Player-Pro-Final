@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
 import 'package:user_repository/fetchPlayersModel.dart';
+import 'package:user_repository/IndividualPlayersModel.dart';
 
 class UserRepository {
   Future<String> authenticate({
@@ -151,6 +152,11 @@ class UserRepository {
 
     print("Users Before List ==> ");
     print(users);
+    for(PlayerPoints user in users) {
+      if(user.fields.points == null || user.fields.points.isEmpty) {
+        user.fields.points = "0";
+      }
+    }
     users.sort((a, b) => int.parse(a.fields.points).compareTo(int.parse(b.fields.points)));
     users = users.reversed.toList();
     print("Users after List ==> ");
@@ -243,7 +249,7 @@ class UserRepository {
     return indiLearnList;
   }
 
-  Future<IndividualLearningModel> getIndiPlanForPlayer(String token,String playerId) async {
+  Future<List<IndividualLearningModel>> getIndiPlanForPlayer(String token,String playerId) async {
     var url = 'https://akyproplayer.herokuapp.com/individual/' + playerId + '/';
     print("Token Header " + token);
     var response = await http.get(url,
@@ -256,8 +262,12 @@ class UserRepository {
       throw Exception();
     }
 
-    final parsed = json.decode(response.body);
-    IndividualLearningModel indiLearn = IndividualLearningModel.fromJson(parsed);
+    final parsed = json.decode(response.body) as List;
+    List<IndividualLearningModel> indiLearn = new List<IndividualLearningModel>();
+
+    for(Map i in parsed){
+      indiLearn.add(IndividualLearningModel.fromJson(i));
+    }
 
     return indiLearn;
   }
@@ -435,6 +445,27 @@ class UserRepository {
   }
 
   Future<IndividualLearningModel> postIndiPlanForPlayer(String token,String playerId,var body) async {
+    var url = 'https://akyproplayer.herokuapp.com/individual/';
+    print("Token Header " + token);
+    var response = await http.post(url,
+        headers: {"Authorization" : "Token "+token,
+          "Content-Type": "application/json"},
+        body :body
+    );
+    print("${response.statusCode}");
+    print("${response.body}");
+
+    if(response.statusCode != 201) {
+      throw Exception();
+    }
+
+    final parsed = json.decode(response.body);
+    IndividualLearningModel individualLearningModel = IndividualLearningModel.fromJson(parsed);
+
+    return individualLearningModel;
+  }
+
+  Future<IndividualLearningModel> putIndiPlanForPlayer(String token,String playerId,var body) async {
     var url = 'https://akyproplayer.herokuapp.com/individual/' + playerId + '/';
     print("Token Header " + token);
     var response = await http.put(url,
@@ -454,6 +485,29 @@ class UserRepository {
 
     return individualLearningModel;
   }
+
+
+  Future<AllotModel> postAllotmentToPlayer(String token,String playerId,var body) async {
+    var url = 'https://akyproplayer.herokuapp.com/allot/';
+    print("Token Header " + token);
+    var response = await http.post(url,
+        headers: {"Authorization" : "Token "+token,
+          "Content-Type": "application/json"},
+        body :body
+    );
+    print("${response.statusCode}");
+    print("${response.body}");
+
+    if(response.statusCode != 201) {
+      throw Exception();
+    }
+
+    final parsed = json.decode(response.body);
+    AllotModel allotment = AllotModel.fromJson(parsed);
+
+    return allotment;
+  }
+
 
   //----------------------SuperAdmin API Calls-------------------------
   Future<List<UserModel>> getAllUsers(String token) async {
@@ -503,6 +557,7 @@ class Token_Model {
 
 class UserModel {
   String email;
+  String videoId;
   String password;
   int id;
   String name;
@@ -522,11 +577,13 @@ class UserModel {
   String level;
   String experience;
   String adminDetails;
+  String dateComplete;
   String weekPoints;
-
+  bool isComplete;
   UserModel(
       {this.email,
         this.id,
+        this.videoId,
         this.password,
         this.name,
         this.role,
@@ -545,11 +602,14 @@ class UserModel {
         this.level,
         this.experience,
         this.adminDetails,
-        this.weekPoints});
+        this.weekPoints,
+      this.isComplete,
+      this.dateComplete});
 
   UserModel.fromJson(Map<String, dynamic> json) {
     email = json['email'];
     id = json['id'];
+    videoId = json['videoId'];
     name = json['name'];
     role = json['role'];
     superAdminName = json['superAdminName'];
@@ -568,6 +628,8 @@ class UserModel {
     experience = json['experience'];
     adminDetails = json['adminDetails'];
     weekPoints = json['weekPoints'];
+    isComplete = json['isComplete'];
+    dateComplete = json['dateComplete'];
   }
 
   Map<String, dynamic> toJson() {
@@ -583,6 +645,8 @@ class UserModel {
     data['userActive'] = this.userActive;
     data['superAdminDeviceRegId'] = this.superAdminDeviceRegId;
     data['adminDeviceRegId'] = this.adminDeviceRegId;
+    data['videoId'] = this.videoId;
+    data['dateComplete'] = this.dateComplete;
     data['userDeviceRegId'] = this.userDeviceRegId;
     data['super_admin_id'] = this.superAdminId;
     data['admin_id'] = this.adminId;
@@ -593,6 +657,7 @@ class UserModel {
     data['experience'] = this.experience;
     data['adminDetails'] = this.adminDetails;
     data['weekPoints'] = this.weekPoints;
+    data['isComplete'] = this.isComplete;
     return data;
   }
 }
@@ -644,7 +709,9 @@ class Fields {
   }
 }
 
-class IndividualLearningModel {
+
+
+/*class IndividualLearningModel {
   int id;
   int playerId;
   String name;
@@ -709,7 +776,7 @@ class IndividualLearningModel {
     data['date'] = this.date;
     return data;
   }
-}
+}*/
 
 class VideoModel {
   int id;
@@ -815,6 +882,55 @@ class PurchasedModel {
     data['goodiesName'] = this.goodiesName;
     data['goodiesId'] = this.goodiesId;
     data['dateRaised'] = this.dateRaised;
+    return data;
+  }
+}
+
+class AllotModel {
+  String assigName;
+  String assigId;
+  String playerName;
+  String playerId;
+  String assignByName;
+  String assignById;
+  String assignLink;
+  bool assignStatus;
+  Null dateComplete;
+
+  AllotModel(
+      {this.assigName,
+        this.assigId,
+        this.playerName,
+        this.playerId,
+        this.assignByName,
+        this.assignById,
+        this.assignLink,
+        this.assignStatus,
+        this.dateComplete});
+
+  AllotModel.fromJson(Map<String, dynamic> json) {
+    assigName = json['assigName'];
+    assigId = json['assigId'];
+    playerName = json['playerName'];
+    playerId = json['playerId'];
+    assignByName = json['assignByName'];
+    assignById = json['assignById'];
+    assignLink = json['assignLink'];
+    assignStatus = json['assignStatus'];
+    dateComplete = json['dateComplete'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['assigName'] = this.assigName;
+    data['assigId'] = this.assigId;
+    data['playerName'] = this.playerName;
+    data['playerId'] = this.playerId;
+    data['assignByName'] = this.assignByName;
+    data['assignById'] = this.assignById;
+    data['assignLink'] = this.assignLink;
+    data['assignStatus'] = this.assignStatus;
+    data['dateComplete'] = this.dateComplete;
     return data;
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:player_pro_final/authentication/authentication.dart';
 import 'package:player_pro_final/common/common.dart';
+import 'package:player_pro_final/home/update_password.dart';
 import 'package:user_repository/user_repository.dart';
 
 import 'CreateUpdatePlayersPage.dart';
@@ -41,6 +42,26 @@ class SuperAdminHomePage extends StatelessWidget {
                           child: Center(
                               child:
                                   Image.asset("assets/logo.png", height: 100)),
+                        ),
+
+                        Container(
+                          padding: EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Color(0xFFbf2431),
+                              )),
+                          child: ListTile(
+                            leading: Text("Update Password",
+                                style: TextStyle(
+                                    color: Color.fromRGBO(211, 172, 43, 1),
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: "MontserratRegular")),
+                            onTap: () {
+                              Navigator.of(context).push(new MaterialPageRoute(
+                                  builder: (_) => UpdatePasswordPage(
+                                      userModel, userRepository)));
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -105,12 +126,15 @@ class SuperAdminHomePage extends StatelessWidget {
                                     MediaQuery.of(context).size.width * 0.1,
                                     0),
                                 child:
-                                    Image.asset("assets/AdminMyPlayers.png")),
+                                    Image.asset("assets/UserCreateUpdate.png")),
                           ),
                           InkWell(
                             onTap: () {
                               //  BlocProvider.of<SuperAdminHomeBloc>(context)
                               //  .add(AssignPointsEvent(userModel));
+                              Navigator.of(context).push(new MaterialPageRoute(
+                                  builder: (context) => CreateUpdatePlayersPage(
+                                      userModel, userRepository)));
                             },
                             child: Container(
                                 margin: EdgeInsets.fromLTRB(
@@ -118,7 +142,7 @@ class SuperAdminHomePage extends StatelessWidget {
                                     10,
                                     MediaQuery.of(context).size.width * 0.1,
                                     0),
-                                child: Image.asset("assets/AdminMyPoints.png")),
+                                child: Image.asset("assets/AssignPractice.png")),
                           ),
                           InkWell(
                             onTap: () {
@@ -132,7 +156,7 @@ class SuperAdminHomePage extends StatelessWidget {
                                     MediaQuery.of(context).size.width * 0.1,
                                     0),
                                 child:
-                                    Image.asset("assets/AdminMyPractice.png")),
+                                    Image.asset("assets/UploadPractice.png")),
                           ),
                           InkWell(
                             onTap: () {
@@ -145,7 +169,21 @@ class SuperAdminHomePage extends StatelessWidget {
                                     10,
                                     MediaQuery.of(context).size.width * 0.1,
                                     0),
-                                child: Image.asset("assets/AdminMyIndi.png")),
+                                child: Image.asset("assets/CreateGoodies.png")),
+                          ),
+
+                          InkWell(
+                            onTap: () {
+                              // BlocProvider.of<SuperAdminHomeBloc>(context)
+                              //  .add(IndividualLearningPlan());
+                            },
+                            child: Container(
+                                margin: EdgeInsets.fromLTRB(
+                                    MediaQuery.of(context).size.width * 0.1,
+                                    10,
+                                    MediaQuery.of(context).size.width * 0.1,
+                                    0),
+                                child: Image.asset("assets/GoodiesRequest.png")),
                           ),
                         ],
                       ),

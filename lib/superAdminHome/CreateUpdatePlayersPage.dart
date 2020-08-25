@@ -11,6 +11,7 @@ import 'bloc/superAdmin_state.dart';
 class CreateUpdatePlayersPage extends StatefulWidget {
   final UserRepository userRepository;
   final UserModel userModel;
+
   CreateUpdatePlayersPage(this.userModel,this.userRepository);
   @override
   _CreateUpdatePlayersPageState createState() => _CreateUpdatePlayersPageState();
@@ -29,10 +30,15 @@ class _CreateUpdatePlayersPageState extends State<CreateUpdatePlayersPage> {
   UserModel _selectedAdmin;
   UserModel createPlayer = new UserModel();
   UserModel createAdmin = new UserModel();
+ // List<TextEditingController> textFieldControllers = [];
   @override
   void initState() {
     super.initState();
     _searchQuery = new TextEditingController();
+
+    //for(int i=0;i<8;i++) {
+     // textFieldControllers.add(TextEditingController());
+   // }
   }
 
 
@@ -376,22 +382,23 @@ class _CreateUpdatePlayersPageState extends State<CreateUpdatePlayersPage> {
       print("search query " + newQuery);
     }
 
-
-
     Widget _buildSearchField() {
-      return new TextField(
-        controller: _searchQuery,
-        autofocus: true,
-        decoration: const InputDecoration(
-          hintText: 'Search...',
-          border: InputBorder.none,
-          hintStyle: const TextStyle(color: Colors.white30),
+      return Container(
+        padding: EdgeInsets.all(5),
+        decoration: BoxDecoration(border: Border.all(color: Color(0xFFbf2431))),
+        child: new TextField(
+          controller: _searchQuery,
+          autofocus: false,
+          decoration: const InputDecoration(
+            hintText: 'Search...',
+            border: InputBorder.none,
+            hintStyle: const TextStyle(color: Colors.white30),
+          ),
+          style: const TextStyle(color: Colors.white, fontSize: 16.0),
+          onChanged: updateSearchQuery,
         ),
-        style: const TextStyle(color: Colors.white, fontSize: 16.0),
-        onChanged: updateSearchQuery,
       );
     }
-
 
 
     return BlocProvider(
@@ -404,6 +411,7 @@ class _CreateUpdatePlayersPageState extends State<CreateUpdatePlayersPage> {
       },
       child: SafeArea(
         child: Scaffold(
+          resizeToAvoidBottomPadding: false,
           key: _scaffoldKey,
           body: BlocListener<SuperAdminHomeBloc, SuperAdminHomeState>(
               listener: (context, state) {
@@ -438,7 +446,21 @@ class _CreateUpdatePlayersPageState extends State<CreateUpdatePlayersPage> {
                 }  else if(state is UpdateUserInitiatedError) {
                   Scaffold.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Error Updating User'),
+                      content: Text('Error Updating User Please check if all field have been filled correctly'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }  else if(state is AddNewUserAdminCreateError) {
+                  Scaffold.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error Creating Admin, Please check if all field have been filled correctly'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }  else if(state is AddNewUserPlayerCreateError) {
+                  Scaffold.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error Creating Player, Please check if all field have been filled correctly'),
                       backgroundColor: Colors.red,
                     ),
                   );
@@ -489,7 +511,7 @@ class _CreateUpdatePlayersPageState extends State<CreateUpdatePlayersPage> {
                         //  margin: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.1, 10, MediaQuery.of(context).size.width * 0.1, 0),
                           margin: EdgeInsets.fromLTRB(
                               MediaQuery.of(context).size.width * 0.1,
-                              MediaQuery.of(context).size.height * 0.2,
+                              MediaQuery.of(context).size.height * 0.18,
                               MediaQuery.of(context).size.width * 0.1,
                               0),
                           child: Column(
@@ -501,14 +523,9 @@ class _CreateUpdatePlayersPageState extends State<CreateUpdatePlayersPage> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Container(
-                                          width : 200,
+                                          width : MediaQuery.of(context).size.width * 0.7,
+                                          margin: EdgeInsets.only(bottom: 10),
                                           child: _buildSearchField()),
-                                      new IconButton(
-                                        icon: const Icon(Icons.search),
-                                        onPressed: () {
-                                         // BlocProvider.of<SuperAdminHomeBloc>(context).add(AddNewUserEvent());
-                                        },
-                                      ),
                                     ],
                                   ),
                                 ],
@@ -516,7 +533,7 @@ class _CreateUpdatePlayersPageState extends State<CreateUpdatePlayersPage> {
 
 
                               Container(
-                                height: MediaQuery.of(context).size.height * 0.6,
+                                height: MediaQuery.of(context).size.height * 0.55,
                                 /* margin: EdgeInsets.fromLTRB(
                                     MediaQuery.of(context).size.width * 0.1,
                                     MediaQuery.of(context).size.height * 0.28,
@@ -613,29 +630,37 @@ class _CreateUpdatePlayersPageState extends State<CreateUpdatePlayersPage> {
                         margin: EdgeInsets.only(
                             top: MediaQuery.of(context).size.height * 0.18),
                         height: MediaQuery.of(context).size.height * 0.6,
-                        child: ListView(
-                          children: [
-                            buildInd("email", state.playerUpdate.email,state.playerUpdate),
-                            buildInd("name", state.playerUpdate.name,state.playerUpdate),
-                            buildInd("role", state.playerUpdate.role,state.playerUpdate),
-                            buildInd("designation", state.playerUpdate.designation,state.playerUpdate),
-                            buildInd("level", state.playerUpdate.level,state.playerUpdate),
-                            buildInd("experience", state.playerUpdate.experience,state.playerUpdate),
-                            buildInd("adminDetails", state.playerUpdate.adminDetails,state.playerUpdate),
-                          ],
+                        child: Padding(
+                            padding: EdgeInsets.only(
+                                bottom: MediaQuery.of(context).viewInsets.bottom),
+                          child: ListView(
+                            children: [
+                              buildInd("email", state.playerUpdate.email,state.playerUpdate),
+                              buildInd("name", state.playerUpdate.name,state.playerUpdate),
+                              buildInd("role", state.playerUpdate.role,state.playerUpdate),
+                              buildInd("designation", state.playerUpdate.designation,state.playerUpdate),
+                              buildInd("level", state.playerUpdate.level,state.playerUpdate),
+                              buildInd("experience", state.playerUpdate.experience,state.playerUpdate),
+                              buildInd("adminDetails", state.playerUpdate.adminDetails,state.playerUpdate),
+                            ],
+                          ),
                         ),
                       ) :  Container(
                        margin: EdgeInsets.only(
                            top: MediaQuery.of(context).size.height * 0.18),
                        height: MediaQuery.of(context).size.height * 0.6,
-                       child: ListView(
-                         children: [
-                           buildInd("email", state.playerUpdate.email,state.playerUpdate),
-                           buildInd("name", state.playerUpdate.name,state.playerUpdate),
-                           buildInd("role", state.playerUpdate.role,state.playerUpdate),
-                           buildInd("points", state.playerUpdate.points,state.playerUpdate),
-                           buildDropDown('AdminName', state.playerUpdate.role, state.playerUpdate)
-                         ],
+                       child: Padding(
+                         padding: EdgeInsets.only(
+                             bottom: MediaQuery.of(context).viewInsets.bottom),
+                         child: ListView(
+                           children: [
+                             buildInd("email", state.playerUpdate.email,state.playerUpdate),
+                             buildInd("name", state.playerUpdate.name,state.playerUpdate),
+                             buildInd("role", state.playerUpdate.role,state.playerUpdate),
+                            // buildInd("points", state.playerUpdate.points,state.playerUpdate),
+                             buildDropDown('AdminName', state.playerUpdate.role, state.playerUpdate)
+                           ],
+                         ),
                        ),
                      ),
 
@@ -780,15 +805,19 @@ class _CreateUpdatePlayersPageState extends State<CreateUpdatePlayersPage> {
                         margin: EdgeInsets.only(
                             top: MediaQuery.of(context).size.height * 0.18),
                         height: MediaQuery.of(context).size.height * 0.6,
-                        child: ListView(
-                          children: [
-                            buildCreateUser("name", "",createPlayer,""),
-                            buildCreateUser("email","",createPlayer,""),
-                            buildCreateUser("password","",createPlayer,""),
-                            buildCreateUser("role","",createPlayer,"Player"),
-                            buildCreateUser("points", "" ,createPlayer,""),
-                            buildDropDown('AdminName', "" , createPlayer),
-                          ],
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                              bottom: MediaQuery.of(context).viewInsets.bottom),
+                          child: ListView(
+                            children: [
+                              buildCreateUser("name", "",createPlayer,""),
+                              buildCreateUser("email","",createPlayer,""),
+                              buildCreateUser("password","",createPlayer,""),
+                              buildCreateUser("role","",createPlayer,"Player"),
+                             // buildCreateUser("points", "" ,createPlayer,""),
+                              buildDropDown('AdminName', "" , createPlayer),
+                            ],
+                          ),
                         ),
                       ),
 
@@ -839,6 +868,7 @@ class _CreateUpdatePlayersPageState extends State<CreateUpdatePlayersPage> {
                 }  else if(state is AddNewUserAdminLoading) {
                   return LoadingIndicator();
                 }  else if(state is AddNewUserAdminLoaded) {
+                  //createAdmin = new UserModel();
                   return Stack(
                     children: [
                       Container(
@@ -854,17 +884,21 @@ class _CreateUpdatePlayersPageState extends State<CreateUpdatePlayersPage> {
                         margin: EdgeInsets.only(
                             top: MediaQuery.of(context).size.height * 0.18),
                         height: MediaQuery.of(context).size.height * 0.6,
-                        child: ListView(
-                          children: [
-                            buildCreateUser("name", "",createAdmin,""),
-                            buildCreateUser("email","",createAdmin,""),
-                            buildCreateUser("password","",createAdmin,""),
-                            buildCreateUser("role","",createAdmin,"Admin"),
-                            buildCreateUser("designation", "",createAdmin,""),
-                            buildCreateUser("level","",createAdmin,""),
-                            buildCreateUser("experience","",createAdmin,""),
-                            buildCreateUser('adminDetails', "" , createAdmin,""),
-                          ],
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                              bottom: MediaQuery.of(context).viewInsets.bottom),
+                          child: ListView(
+                            children: [
+                              createAdmin.name != null ? buildCreateUser("name", createAdmin.name,createAdmin,""): buildCreateUser("name", "",createAdmin,""),
+                              createAdmin.email !=null ? buildCreateUser("email",createAdmin.email,createAdmin,"") : buildCreateUser("email","",createAdmin,""),
+                              createAdmin.password !=null ? buildCreateUser("password",createAdmin.password,createAdmin,"") : buildCreateUser("password","",createAdmin,""),
+                              createAdmin.role !=null ? buildCreateUser("role",createAdmin.role,createAdmin,"Admin") : buildCreateUser("role","",createAdmin,"Admin"),
+                              createAdmin.designation !=null ? buildCreateUser("designation", createAdmin.designation,createAdmin,"") : buildCreateUser("designation", "",createAdmin,""),
+                              createAdmin.level !=null ?  buildCreateUser("level",createAdmin.level,createAdmin,"") : buildCreateUser("level","",createAdmin,""),
+                              createAdmin.experience !=null ? buildCreateUser("experience",createAdmin.experience,createAdmin,"") : buildCreateUser("experience","",createAdmin,""),
+                              createAdmin.experience !=null ? buildCreateUser('adminDetails', createAdmin.adminDetails , createAdmin,"") : buildCreateUser('adminDetails', "" , createAdmin,""),
+                            ],
+                          ),
                         ),
                       ),
 

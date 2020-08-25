@@ -2,16 +2,23 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:player_pro_final/authentication/authentication.dart';
+import 'package:player_pro_final/common/common.dart';
 import 'package:user_repository/user_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 import 'RoundSliderThumbShape.dart';
+import 'bloc/home_bloc.dart';
+import 'bloc/home_event.dart';
+import 'bloc/home_state.dart';
 
 class PracticePage extends StatefulWidget {
   final UserModel userModel;
-  PracticePage(this.userModel);
+  final UserRepository userRepository;
+  PracticePage(this.userModel,this.userRepository);
   @override
   _PracticePageState createState() => _PracticePageState();
 }
@@ -41,7 +48,39 @@ class _PracticePageState extends State<PracticePage> {
          /* appBar: AppBar(
             backgroundColor: Colors.transparent,
           ),*/
-          body: _BumbleBeeRemoteVideo(widget.userModel),
+          body: BlocProvider(
+            create: (context) {
+              return HomeBloc(
+                userModel: widget.userModel,
+                authenticationBloc: BlocProvider.of<AuthenticationBloc>(context),
+                userRepository: widget.userRepository,
+              )..add(HomeInitEvent());
+            },
+            child:  BlocListener<HomeBloc, HomeState>(
+              listener: (context,state) {
+                  if(state is PracticeCompletedLoaded) {
+                    Scaffold.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Practice Completed Successfully'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  } else if(state is PracticeCompletedError) {
+                    Scaffold.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Oops something went wrong..!'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+              },
+              child: _BumbleBeeRemoteVideo(widget.userModel),
+            ),
+
+
+          ),
+
+
         ),
       ),
     );
@@ -130,95 +169,234 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
       return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
     }
 
-    return Container(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          // const Text('With remote mp4'),
+    return BlocBuilder<HomeBloc, HomeState>(
+      builder: (context,state) {
+        if(state is PracticeCompletedLoaded) {
+          widget.userModel.isComplete = true;
+          return Container(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                // const Text('With remote mp4'),
+                Flexible(
+                  child: Stack(children: [
+                    _controller.value.initialized
+                        ? VideoPlayer(_controller)
+                        : Container(),
+
+                    Align(alignment: Alignment.topLeft,
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Color(0xaab3a3a3a)
+                        ),
+                        width: MediaQuery.of(context).size.width,
+                        child: Wrap(
+                          children: [
+                            Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(2.0),
+                                child: Align(
+                                  alignment: Alignment.topLeft,
+                                  child: IconButton(
+                                    icon: Icon(Icons.arrow_back,color: Color.fromRGBO(211, 172, 43, 1),size: MediaQuery.of(context).size.height * 0.04,),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),),
 
 
-          Flexible(
-            child: Stack(children: [
-              _controller.value.initialized
-                  ? VideoPlayer(_controller)
-                  : Container(),
-
-              Align(alignment: Alignment.topLeft,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Color(0xaab3a3a3a)
-                ),
-                width: MediaQuery.of(context).size.width,
-                child: Wrap(
-                  children: [
-                    Center(
-                      child: Padding(
+                    Align(
+                      alignment: Alignment.topRight,
+                      child:  Padding(
                         padding: const EdgeInsets.all(2.0),
-                        child: Align(
-                          alignment: Alignment.topLeft,
-                          child: IconButton(
-                            icon: Icon(Icons.arrow_back,color: Color.fromRGBO(211, 172, 43, 1),size: MediaQuery.of(context).size.height * 0.04,),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
+                        child: IconButton(
+                          icon: widget.userModel.isComplete ?  Icon(Icons.beenhere,color: Color.fromRGBO(211, 172, 43, 1),size: MediaQuery.of(context).size.height * 0.04,) :Icon(Icons.done,color: Color.fromRGBO(211, 172, 43, 1),size: MediaQuery.of(context).size.height * 0.04,),
+                          onPressed: () {
+                           // Navigator.of(context).pop();
+                            if(widget.userModel.isComplete == false) {
+                              BlocProvider.of<HomeBloc>(context)
+                                  .add(PracticeCompletedEvent());
+                            }
+                          },
                         ),
                       ),
-                    ),
-                  ],
+                    )
+
+
+                  ],),
                 ),
-              ),)
-            ],),
-          ),
 
-          Container(
-            decoration: BoxDecoration(
-                color: Color.fromRGBO(58, 58, 58, 1),
-                border: Border(
-                    top: BorderSide(
-                        color: Color.fromRGBO(211, 172, 43, 1), width: 3))),
-            height: MediaQuery.of(context).size.height / 3.5,
-            child: Column(
-              children: [
-                // VideoProgressIndicator(_controller, allowScrubbing: true,colors: VideoProgressColors(playedColor: Color.fromRGBO(184, 38, 49, 1),bufferedColor: Color.fromRGBO(184, 38, 49, 1)),),
-                slider(_controller),
+                Container(
+                  decoration: BoxDecoration(
+                      color: Color.fromRGBO(58, 58, 58, 1),
+                      border: Border(
+                          top: BorderSide(
+                              color: Color.fromRGBO(211, 172, 43, 1), width: 3))),
+                  height: MediaQuery.of(context).size.height / 3.5,
+                  child: Column(
+                    children: [
+                      // VideoProgressIndicator(_controller, allowScrubbing: true,colors: VideoProgressColors(playedColor: Color.fromRGBO(184, 38, 49, 1),bufferedColor: Color.fromRGBO(184, 38, 49, 1)),),
+                      slider(_controller),
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 25.0),
-                      child: _controller.value.position != null
-                          ? Text(
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 25.0),
+                            child: _controller.value.position != null
+                                ? Text(
                               _printDuration(Duration(
                                   seconds: _controller.value.position.inSeconds)),
                               style: TextStyle(color: Colors.white),
                             )
-                          : Text("0"),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 25.0),
-                      child: _controller.value.duration != null
-                          ? Text(
+                                : Text("0"),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 25.0),
+                            child: _controller.value.duration != null
+                                ? Text(
                               _printDuration(Duration(
                                   seconds: _controller.value.duration.inSeconds)),
                               style: TextStyle(color: Colors.white),
                             )
-                          : Text("0"),
-                    ),
-                  ],
+                                : Text("0"),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      _PlayPauseOverlay(controller: _controller),
+                    ],
+                  ),
                 ),
-                SizedBox(
-                  height: 10,
-                ),
-                _PlayPauseOverlay(controller: _controller),
+                //ClosedCaption(text: _controller.value.caption.text),
               ],
             ),
-          ),
-          //ClosedCaption(text: _controller.value.caption.text),
-        ],
-      ),
+          );
+        } else if(state is PracticeCompletedLoading) {
+          return LoadingIndicator();
+        }
+        else
+          return Container(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                // const Text('With remote mp4'),
+
+
+                Flexible(
+                  child: Stack(children: [
+                    _controller.value.initialized
+                        ? VideoPlayer(_controller)
+                        : Container(),
+
+                    Align(alignment: Alignment.topLeft,
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Color(0xaab3a3a3a)
+                        ),
+                        width: MediaQuery.of(context).size.width,
+                        child: Wrap(
+                          children: [
+                            Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(2.0),
+                                child: Align(
+                                  alignment: Alignment.topLeft,
+                                  child: IconButton(
+                                    icon: Icon(Icons.arrow_back,color: Color.fromRGBO(211, 172, 43, 1),size: MediaQuery.of(context).size.height * 0.04,),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),),
+
+
+                    Align(
+                      alignment: Alignment.topRight,
+                      child:  Padding(
+                        padding: const EdgeInsets.all(2.0),
+                        child: IconButton(
+                          icon:  widget.userModel.isComplete ?  Icon(Icons.beenhere,color: Color.fromRGBO(211, 172, 43, 1),size: MediaQuery.of(context).size.height * 0.04,) :Icon(Icons.done,color: Color.fromRGBO(211, 172, 43, 1),size: MediaQuery.of(context).size.height * 0.04,),
+                          onPressed: () {
+                            //Navigator.of(context).pop();
+                            if(widget.userModel.isComplete == false) {
+                              BlocProvider.of<HomeBloc>(context)
+                                  .add(PracticeCompletedEvent());
+                            }
+                          },
+                        ),
+                      ),
+                    )
+
+
+                  ],),
+                ),
+
+                Container(
+                  decoration: BoxDecoration(
+                      color: Color.fromRGBO(58, 58, 58, 1),
+                      border: Border(
+                          top: BorderSide(
+                              color: Color.fromRGBO(211, 172, 43, 1), width: 3))),
+                  height: MediaQuery.of(context).size.height / 3.5,
+                  child: Column(
+                    children: [
+                      // VideoProgressIndicator(_controller, allowScrubbing: true,colors: VideoProgressColors(playedColor: Color.fromRGBO(184, 38, 49, 1),bufferedColor: Color.fromRGBO(184, 38, 49, 1)),),
+                      slider(_controller),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 25.0),
+                            child: _controller.value.position != null
+                                ? Text(
+                              _printDuration(Duration(
+                                  seconds: _controller.value.position.inSeconds)),
+                              style: TextStyle(color: Colors.white),
+                            )
+                                : Text("0"),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 25.0),
+                            child: _controller.value.duration != null
+                                ? Text(
+                              _printDuration(Duration(
+                                  seconds: _controller.value.duration.inSeconds)),
+                              style: TextStyle(color: Colors.white),
+                            )
+                                : Text("0"),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      _PlayPauseOverlay(controller: _controller),
+                    ],
+                  ),
+                ),
+                //ClosedCaption(text: _controller.value.caption.text),
+              ],
+            ),
+          );
+      },
     );
+
+
   }
 }
 
