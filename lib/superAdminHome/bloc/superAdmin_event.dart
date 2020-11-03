@@ -77,3 +77,63 @@ class UploadVideosPageEvent extends SuperAdminHomeEvent {
   // TODO: implement props
   List<Object> get props => [];
 }
+
+
+class OpenGoodiesListPageEvent extends SuperAdminHomeEvent {
+  @override
+  // TODO: implement props
+  List<Object> get props => [];
+}
+
+class GoodiesRequestEvent extends SuperAdminHomeEvent {
+  @override
+  // TODO: implement props
+  List<Object> get props => [];
+}
+
+class PendingGoodiesRequestsListEvent extends SuperAdminHomeEvent {
+  @override
+  // TODO: implement props
+  List<Object> get props => [];
+}
+
+class GoodieAcceptedEvent extends SuperAdminHomeEvent {
+  final PurchasedModel goodieRequestModel;
+  final bool isAccepted;
+  final String pageType;
+  GoodieAcceptedEvent(this.goodieRequestModel,this.isAccepted,this.pageType);
+  @override
+  // TODO: implement props
+  List<Object> get props => [];
+}
+
+
+class AcceptedGoodiesRequestListEvent extends SuperAdminHomeEvent {
+  @override
+  // TODO: implement props
+  List<Object> get props => [];
+}
+
+class RejectedGoodiesRequestsListEvent extends SuperAdminHomeEvent {
+  @override
+  // TODO: implement props
+  List<Object> get props => [];
+}
+
+class OpenVideosListEvent extends SuperAdminHomeEvent {
+  @override
+  // TODO: implement props
+  List<Object> get props => [];
+}
+
+class GetHighScoreEvent extends SuperAdminHomeEvent {
+  @override
+  // TODO: implement props
+  List<Object> get props => [];
+}
+
+class VideoUploadingEvent extends SuperAdminHomeEvent {
+  @override
+  // TODO: implement props
+  List<Object> get props => [];
+}

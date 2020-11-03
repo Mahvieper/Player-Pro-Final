@@ -172,6 +172,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       }
     }
     else if(event is ContactUsRequested) {
+      yield ContactUsLoading();
       UserModel userModel = event.userModel;
       String token = await _getToken();
       try {
@@ -195,6 +196,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       }
     }
     else if(event is ReportProbRequested) {
+      yield ReportProbLoading();
       UserModel userModel = event.userModel;
       String token = await _getToken();
       try {

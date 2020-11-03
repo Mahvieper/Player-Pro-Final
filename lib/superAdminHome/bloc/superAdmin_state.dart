@@ -214,10 +214,10 @@ class AddNewUserAdminCreateError extends SuperAdminHomeState {
 class UploadVideosPageLoading extends SuperAdminHomeState {}
 
 class UploadVideosPageLoaded extends SuperAdminHomeState {
-  final UserModel createdAdmin;
-  UploadVideosPageLoaded(this.createdAdmin);
+  final UserModel userModelVideo;
+  UploadVideosPageLoaded(this.userModelVideo);
   @override
-  List<Object> get props => [createdAdmin];
+  List<Object> get props => [userModelVideo];
 }
 
 class UploadVideosPageError extends SuperAdminHomeState {
@@ -230,4 +230,189 @@ class UploadVideosPageError extends SuperAdminHomeState {
 
   @override
   String toString() => 'AddNewUserAdminCreateError { error: $error }';
+}
+
+//---------------------OpenVideosListEvent---------------------------------------------
+class OpenVideosListPageLoading extends SuperAdminHomeState {}
+
+class OpenVideosListPageLoaded extends SuperAdminHomeState {
+  final UserModel userModelVideo;
+  final List<VideoModel> videosList;
+  OpenVideosListPageLoaded(this.userModelVideo,this.videosList);
+  @override
+  List<Object> get props => [userModelVideo];
+}
+
+class OpenVideosListPageError extends SuperAdminHomeState {
+  final String error;
+
+  const OpenVideosListPageError({@required this.error});
+
+  @override
+  List<Object> get props => [error];
+
+  @override
+  String toString() => 'OpenVideosListPageError { error: $error }';
+}
+
+//---------------------OpenVideosListEvent---------------------------------------------
+class OpenGoodiesListPageLoading extends SuperAdminHomeState {}
+
+class OpenGoodiesListPageLoaded extends SuperAdminHomeState {
+  final UserModel userModelVideo;
+  final List<ShoppingItemModel> shoppingItemsList;
+  OpenGoodiesListPageLoaded(this.userModelVideo,this.shoppingItemsList);
+  @override
+  List<Object> get props => [userModelVideo];
+}
+
+class OpenGoodiesListPageError extends SuperAdminHomeState {
+  final String error;
+
+  const OpenGoodiesListPageError({@required this.error});
+
+  @override
+  List<Object> get props => [error];
+
+  @override
+  String toString() => 'OpenGoodiesListPageError { error: $error }';
+}
+
+//---------------------GoodiesRequestEvent---------------------------------------------
+class GoodiesRequestLoading extends SuperAdminHomeState {}
+
+class GoodiesRequestLoaded extends SuperAdminHomeState {
+  @override
+  List<Object> get props => [];
+}
+
+class GoodiesRequestError extends SuperAdminHomeState {
+  final String error;
+
+  const GoodiesRequestError({@required this.error});
+
+  @override
+  List<Object> get props => [error];
+
+  @override
+  String toString() => 'GoodiesRequestError { error: $error }';
+}
+
+
+
+//---------------------PendingGoodiesRequestsListEvent---------------------------------------------
+class PendingGoodiesRequestsListLoading extends SuperAdminHomeState {}
+
+class PendingGoodiesRequestsListLoaded extends SuperAdminHomeState {
+  final UserModel userModelVideo;
+  final List<PurchasedModel> shoppingItemsList;
+  PendingGoodiesRequestsListLoaded(this.userModelVideo,this.shoppingItemsList);
+  @override
+  List<Object> get props => [];
+}
+
+class PendingGoodiesRequestsListError extends SuperAdminHomeState {
+  final String error;
+
+  const PendingGoodiesRequestsListError({@required this.error});
+
+  @override
+  List<Object> get props => [error];
+
+  @override
+  String toString() => 'PendingGoodiesRequestsListError { error: $error }';
+}
+
+
+//---------------------GoodieAcceptedEvent---------------------------------------------
+class GoodieAcceptedLoading extends SuperAdminHomeState {}
+
+class GoodieAcceptedLoaded extends SuperAdminHomeState {
+  final UserModel userModelVideo;
+  final PurchasedModel shoppingItem;
+  GoodieAcceptedLoaded(this.userModelVideo,this.shoppingItem);
+  @override
+  List<Object> get props => [];
+}
+
+class GoodieAcceptedError extends SuperAdminHomeState {
+  final String error;
+
+  const GoodieAcceptedError({@required this.error});
+
+  @override
+  List<Object> get props => [error];
+
+  @override
+  String toString() => 'GoodieAcceptedError { error: $error }';
+}
+
+
+//---------------------AcceptedGoodiesRequestListEvent---------------------------------------------
+class AcceptedGoodiesRequestListLoading extends SuperAdminHomeState {}
+
+class AcceptedGoodiesRequestListLoaded extends SuperAdminHomeState {
+  final UserModel userModelVideo;
+  final List<PurchasedModel> shoppingItemsList;
+  AcceptedGoodiesRequestListLoaded(this.userModelVideo,this.shoppingItemsList);
+  @override
+  List<Object> get props => [userModelVideo,shoppingItemsList];
+}
+
+class AcceptedGoodiesRequestListError extends SuperAdminHomeState {
+  final String error;
+
+  const AcceptedGoodiesRequestListError({@required this.error});
+
+  @override
+  List<Object> get props => [error];
+
+  @override
+  String toString() => 'PendingGoodiesRequestsListError { error: $error }';
+}
+
+//--------------For Get HighScores Section-------------------------------
+class GetHighScoresLoading extends SuperAdminHomeState {}
+
+class GetHighScoresLoaded extends SuperAdminHomeState {
+  final List<PlayerPoints> userModels;
+
+  GetHighScoresLoaded(this.userModels);
+  @override
+  List<Object> get props => [userModels];
+}
+
+class GetHighScoresError extends SuperAdminHomeState {
+  final String error;
+
+  const GetHighScoresError({@required this.error});
+
+  @override
+  List<Object> get props => [error];
+
+  @override
+  String toString() => 'GetHighScoresError { error: $error }';
+}
+
+//---------------------RejectedGoodiesRequestsListEvent---------------------------------------------
+class RejectedGoodiesRequestsListLoading extends SuperAdminHomeState {}
+
+class RejectedGoodiesRequestsListLoaded extends SuperAdminHomeState {
+  final UserModel userModelVideo;
+  final List<PurchasedModel> shoppingItemsList;
+  RejectedGoodiesRequestsListLoaded(this.userModelVideo,this.shoppingItemsList);
+  @override
+  List<Object> get props => [userModelVideo,shoppingItemsList];
+}
+
+class RejectedGoodiesRequestsListError extends SuperAdminHomeState {
+  final String error;
+
+  const RejectedGoodiesRequestsListError({@required this.error});
+
+  @override
+  List<Object> get props => [error];
+
+  @override
+  String toString() => 'RejectedGoodiesRequestsListError { error: $error }';
 }

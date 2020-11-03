@@ -3,8 +3,6 @@ import 'package:player_pro_final/superAdminHome/bloc/superAdmin_state.dart';
 import 'package:bloc/bloc.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:player_pro_final/adminHome/bloc/admin_event.dart';
-import 'package:player_pro_final/adminHome/bloc/admin_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:user_repository/user_repository.dart';
 import 'package:bloc/bloc.dart';
@@ -193,6 +191,164 @@ class SuperAdminHomeBloc
         yield AddNewUserAdminCreateError(error: error.toString());
         yield AddNewUserAdminLoaded();
       }
+    } else if(event is UploadVideosPageEvent) {
+      yield UploadVideosPageLoading();
+
+      try {
+        yield UploadVideosPageLoaded(userModel);
+      } catch(error) {
+        yield UploadVideosPageError(error: error.toString());
+      }
+    } else if(event is OpenVideosListEvent) {
+      yield OpenVideosListPageLoading();
+
+      try {
+        String token = await _getToken();
+        List<VideoModel> videosList = await userRepository.getVideos(token);
+        yield OpenVideosListPageLoaded(userModel,videosList);
+      } catch(error) {
+        yield OpenVideosListPageError(error: error.toString());
+      }
+    } else if(event is OpenGoodiesListPageEvent) {
+      yield OpenGoodiesListPageLoading();
+
+      try {
+        String token = await _getToken();
+        List<ShoppingItemModel> shoppingItemsList = await userRepository.getShoppingItems(token);
+        yield OpenGoodiesListPageLoaded(userModel,shoppingItemsList);
+      } catch(error) {
+        yield OpenGoodiesListPageError(error: error.toString());
+      }
+    }  else if(event is GoodiesRequestEvent) {
+      yield GoodiesRequestLoading();
+
+      try {
+        yield GoodiesRequestLoaded();
+      } catch(error) {
+        yield GoodiesRequestError(error: error.toString());
+      }
+    } else if(event is PendingGoodiesRequestsListEvent) {
+      yield PendingGoodiesRequestsListLoading();
+
+      try {
+        String token = await _getToken();
+        List<PurchasedModel> shoppingItemsList = await userRepository.getGoodiesRequests(token);
+        List<PurchasedModel> shoppingItemsListNew = new List<PurchasedModel>();
+        for(PurchasedModel item in shoppingItemsList) {
+          if((!item.status.contains("Accepted") &&  !item.status.contains("Rejected"))) {
+            shoppingItemsListNew.add(item);
+          }
+        }
+        yield PendingGoodiesRequestsListLoaded(userModel,shoppingItemsListNew);
+      } catch(error) {
+        yield PendingGoodiesRequestsListError(error: error.toString());
+      }
+    }  else if(event is GoodieAcceptedEvent) {
+      yield GoodieAcceptedLoading();
+
+      try {
+        String token = await _getToken();
+        Map data;
+        if(event.isAccepted) {
+          data = {
+            "userName": event.goodieRequestModel.userName,
+            "status": "Accepted",
+            "userId" : event.goodieRequestModel.userId.toString(),
+            "points" : event.goodieRequestModel.points,
+            "goodiesName" : event.goodieRequestModel.goodiesName,
+          };
+        }
+        else {
+          data = {
+            "userName": event.goodieRequestModel.userName,
+            "status": "Rejected",
+            "userId" : event.goodieRequestModel.userId.toString(),
+            "points" : event.goodieRequestModel.points,
+            "goodiesName" : event.goodieRequestModel.goodiesName,
+          };
+        }
+        var body = json.encode(data);
+        PurchasedModel shoppingItem = await userRepository.updateGoodiesRequest(token,event.goodieRequestModel.id.toString(),body);
+        yield GoodieAcceptedLoaded(userModel,shoppingItem);
+        List<PurchasedModel> shoppingItemsList = await userRepository.getGoodiesRequests(token);
+        if(event.pageType.contains("Pending")) {
+          List<PurchasedModel> shoppingItemsListNew = new List<PurchasedModel>();
+          for(PurchasedModel item in shoppingItemsList) {
+            if((!item.status.contains("Accepted") &&  !item.status.contains("Rejected"))) {
+              shoppingItemsListNew.add(item);
+            }
+          }
+          yield PendingGoodiesRequestsListLoaded(userModel,shoppingItemsListNew);
+        }
+
+        else if(event.pageType.contains("Accept")) {
+          List<PurchasedModel> shoppingItemsListNew = new List<PurchasedModel>();
+          for(PurchasedModel item in shoppingItemsList) {
+            if((!item.status.isEmpty && !item.status.contains("Rejected"))) {
+              shoppingItemsListNew.add(item);
+            }
+          }
+          yield AcceptedGoodiesRequestListLoaded(userModel,shoppingItemsListNew);
+        }
+          else if(event.pageType.contains("Reject")) {
+          List<PurchasedModel> shoppingItemsListNew = new List<PurchasedModel>();
+          for(PurchasedModel item in shoppingItemsList) {
+            if((!item.status.isEmpty && !item.status.contains("Accepted"))) {
+              shoppingItemsListNew.add(item);
+            }
+          }
+          yield RejectedGoodiesRequestsListLoaded(userModel,shoppingItemsListNew);
+        }
+
+      } catch(error) {
+        yield GoodieAcceptedError(error: error.toString());
+      }
+    } else if(event is AcceptedGoodiesRequestListEvent) {
+      yield AcceptedGoodiesRequestListLoading();
+
+      try {
+        String token = await _getToken();
+        List<PurchasedModel> shoppingItemsList = await userRepository.getGoodiesRequests(token);
+        List<PurchasedModel> shoppingItemsListNew = new List<PurchasedModel>();
+        for(PurchasedModel item in shoppingItemsList) {
+           if(!item.status.isEmpty && !item.status.contains("Rejected")) {
+             shoppingItemsListNew.add(item);
+           }
+        }
+        yield AcceptedGoodiesRequestListLoaded(userModel,shoppingItemsListNew);
+      } catch(error) {
+        yield AcceptedGoodiesRequestListError(error: error.toString());
+      }
+    }  else if(event is RejectedGoodiesRequestsListEvent) {
+      yield RejectedGoodiesRequestsListLoading();
+
+      try {
+        String token = await _getToken();
+        List<PurchasedModel> shoppingItemsList = await userRepository.getGoodiesRequests(token);
+        List<PurchasedModel> shoppingItemsListNew = new List<PurchasedModel>();
+        for(PurchasedModel item in shoppingItemsList) {
+          if(!item.status.isEmpty && !item.status.contains("Accepted")) {
+            shoppingItemsListNew.add(item);
+          }
+        }
+        yield RejectedGoodiesRequestsListLoaded(userModel,shoppingItemsListNew);
+      } catch(error) {
+        yield RejectedGoodiesRequestsListError(error: error.toString());
+      }
+    } else if(event is GetHighScoreEvent) {
+      yield GetHighScoresLoading();
+
+      try {
+        String token = await _getToken();
+        print("Token from Bloc ===>" + token);
+        List<PlayerPoints> _playersList = await userRepository.getUsers(token,"Player");
+        print("Players List"+ _playersList.toString());
+        // List<UserModel> _playersList = new List<UserModel>();
+        yield GetHighScoresLoaded(_playersList);
+      } catch (error) {
+        yield GetHighScoresError(error: error.toString());
+      }
+
     }
   }
 }

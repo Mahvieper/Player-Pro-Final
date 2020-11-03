@@ -10,10 +10,12 @@ import 'package:player_pro_final/home/update_password.dart';
 import 'package:user_repository/fetchPlayersModel.dart';
 import 'package:user_repository/user_repository.dart';
 import 'package:user_repository/IndividualPlayersModel.dart';
+import 'UpdateProfilePicPage.dart';
 import 'assign_videos.dart';
 import 'bloc/admin_event.dart';
 import 'bloc/admin_state.dart';
 import 'package:intl/intl.dart';
+
 class AdminHomePage extends StatelessWidget {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final UserRepository userRepository;
@@ -34,14 +36,20 @@ class AdminHomePage extends StatelessWidget {
     "ADDITIONAL INFORMATION",
   ];
 
-  String _target,_technical,_physical,_psychological,_social,_tactical,_additionalInfo;
+  String _target,
+      _technical,
+      _physical,
+      _psychological,
+      _social,
+      _tactical,
+      _additionalInfo;
   IndividualLearningModel indModel = new IndividualLearningModel();
   List<Map<String, Object>> _indiMapList;
 
   @override
   Widget build(BuildContext context) {
-
-    Widget buildInd(String title, String desc,IndividualLearningModel indiModel) {
+    Widget buildInd(
+        String title, String desc, IndividualLearningModel indiModel) {
       DateTime now = DateTime.now();
       String formattedDate = DateFormat('yyyy-MM-dd').format(now);
       return Container(
@@ -82,90 +90,71 @@ class AdminHomePage extends StatelessWidget {
                   minLines: title.contains("MESSAGE") ? 5 : 1,
                   maxLines: 8,
                   onChanged: (val) {
-                    if(title.contains("TARGET")) {
+                    if (title.contains("TARGET")) {
                       _target = val;
-                     // indModel.fields.target = val;
+                      // indModel.fields.target = val;
                       indiModel.fields.target = val;
-                    }
-                    else if(title.contains("TECHNICAL")) {
+                    } else if (title.contains("TECHNICAL")) {
                       _technical = val;
-                     // indModel.fields.technical = val;
+                      // indModel.fields.technical = val;
                       indiModel.fields.technical = val;
-                    }
-
-                    else if(title.contains("PHYSICAL")) {
+                    } else if (title.contains("PHYSICAL")) {
                       indModel.fields.physical = val;
                       _physical = val;
                       indiModel.fields.physical = val;
-                    }
-                    else if(title.contains("PSYCHOLOGICAL")) {
+                    } else if (title.contains("PSYCHOLOGICAL")) {
                       _psychological = val;
-                     // indModel.fields.psychology = val;
+                      // indModel.fields.psychology = val;
                       indiModel.fields.psychology = val;
-                    }
-
-                    else if(title.contains("SOCIAL")) {
-                     // indModel.fields.social = val;
+                    } else if (title.contains("SOCIAL")) {
+                      // indModel.fields.social = val;
                       _social = val;
                       indiModel.fields.social = val;
-                    }
-
-                    else if(title.contains("TACTICAL")) {
-                    //  indModel.fields.tactical = val;
+                    } else if (title.contains("TACTICAL")) {
+                      //  indModel.fields.tactical = val;
                       _tactical = val;
                       indiModel.fields.tactical = val;
-                    }
-
-                    else if(title.contains("ADDITIONAL INFORMATION")) {
-                     // indModel.fields.information = val;
+                    } else if (title.contains("ADDITIONAL INFORMATION")) {
+                      // indModel.fields.information = val;
                       _additionalInfo = val;
                       indiModel.fields.information = val;
                     }
                   },
                   onSaved: (val) {
-                    if(title.contains("TARGET")) {
+                    if (title.contains("TARGET")) {
                       _target = val;
-                     // indModel.fields.target = val;
+                      // indModel.fields.target = val;
                       indiModel.fields.target = val;
-                    }
-                    else if(title.contains("TECHNICAL")) {
+                    } else if (title.contains("TECHNICAL")) {
                       _technical = val;
-                     // indModel.fields.technical = val;
+                      // indModel.fields.technical = val;
                       indiModel.fields.technical = val;
-                    }
-
-                    else if(title.contains("PHYSICAL")) {
-                     // indModel.fields.physical = val;
+                    } else if (title.contains("PHYSICAL")) {
+                      // indModel.fields.physical = val;
                       _physical = val;
                       indiModel.fields.physical = val;
-                    }
-                    else if(title.contains("PSYCHOLOGICAL")) {
+                    } else if (title.contains("PSYCHOLOGICAL")) {
                       _psychological = val;
-                    //  indModel.fields.psychology = val;
+                      //  indModel.fields.psychology = val;
                       indiModel.fields.psychology = val;
-                    }
-
-                    else if(title.contains("SOCIAL")) {
-                    //  indModel.fields.social = val;
+                    } else if (title.contains("SOCIAL")) {
+                      //  indModel.fields.social = val;
                       _social = val;
                       indiModel.fields.social = val;
-                    }
-
-                    else if(title.contains("TACTICAL")) {
-                     // indModel.fields.tactical = val;
+                    } else if (title.contains("TACTICAL")) {
+                      // indModel.fields.tactical = val;
                       _tactical = val;
                       indiModel.fields.tactical = val;
-                    }
-
-                    else if(title.contains("ADDITIONAL INFORMATION")) {
-                    //  indModel.fields.information = val;
+                    } else if (title.contains("ADDITIONAL INFORMATION")) {
+                      //  indModel.fields.information = val;
                       _additionalInfo = val;
                       indiModel.fields.information = val;
                     }
-
                   },
                   initialValue: desc,
-                  enabled: formattedDate.contains(indiModel.fields.date) ? true : false,
+                  enabled: formattedDate.contains(indiModel.fields.date)
+                      ? true
+                      : false,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.white,
@@ -176,8 +165,6 @@ class AdminHomePage extends StatelessWidget {
             ],
           ));
     }
-
-
 
     return BlocProvider(
         create: (context) {
@@ -249,13 +236,12 @@ class AdminHomePage extends StatelessWidget {
                             },
                           ),
                         ),
-
                         Container(
                           padding: EdgeInsets.all(5),
                           decoration: BoxDecoration(
                               border: Border.all(
-                                color: Color(0xFFbf2431),
-                              )),
+                            color: Color(0xFFbf2431),
+                          )),
                           child: ListTile(
                             leading: Text("Update Password",
                                 style: TextStyle(
@@ -265,6 +251,25 @@ class AdminHomePage extends StatelessWidget {
                             onTap: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (_) => UpdatePasswordPage(
+                                      userModel, userRepository)));
+                            },
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                            color: Color(0xFFbf2431),
+                          )),
+                          child: ListTile(
+                            leading: Text("Update Profile Picture",
+                                style: TextStyle(
+                                    color: Color.fromRGBO(211, 172, 43, 1),
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: "MontserratRegular")),
+                            onTap: () {
+                              Navigator.of(context).push(new MaterialPageRoute(
+                                  builder: (_) => UpdateProfilePicPage(
                                       userModel, userRepository)));
                             },
                           ),
@@ -289,8 +294,7 @@ class AdminHomePage extends StatelessWidget {
                       backgroundColor: Colors.red,
                     ),
                   );
-                }
-                else if (state is AssignPointsToPlayerError) {
+                } else if (state is AssignPointsToPlayerError) {
                   Scaffold.of(context).showSnackBar(
                     SnackBar(
                       content: Text(state.error),
@@ -304,7 +308,7 @@ class AdminHomePage extends StatelessWidget {
                       backgroundColor: Colors.red,
                     ),
                   );
-                } else if(state is IndLearningDetailLSendLoaded) {
+                } else if (state is IndLearningDetailLSendLoaded) {
                   Scaffold.of(context).showSnackBar(
                     SnackBar(
                       content: Text("Details Added"),
@@ -377,8 +381,11 @@ class AdminHomePage extends StatelessWidget {
                               ),
                               InkWell(
                                 onTap: () {
-                                   //BlocProvider.of<AdminHomeBloc>(context).add(AssignVideosEvent());
-                                Navigator.of(context).push(new MaterialPageRoute(builder: (context) => AssignVideoPage(userModel,userRepository)));
+                                  //BlocProvider.of<AdminHomeBloc>(context).add(AssignVideosEvent());
+                                  Navigator.of(context).push(
+                                      new MaterialPageRoute(
+                                          builder: (context) => AssignVideoPage(
+                                              userModel, userRepository)));
                                 },
                                 child: Container(
                                     margin: EdgeInsets.fromLTRB(
@@ -391,7 +398,7 @@ class AdminHomePage extends StatelessWidget {
                               ),
                               InkWell(
                                 onTap: () {
-                                     BlocProvider.of<AdminHomeBloc>(context)
+                                  BlocProvider.of<AdminHomeBloc>(context)
                                       .add(IndividualLearningPlan());
                                 },
                                 child: Container(
@@ -415,7 +422,7 @@ class AdminHomePage extends StatelessWidget {
                             children: [
                               InkWell(
                                 onTap: () {
-                                     BlocProvider.of<AdminHomeBloc>(context)
+                                  BlocProvider.of<AdminHomeBloc>(context)
                                       .add(GetHighScoreEvent());
                                 },
                                 child: Container(
@@ -711,7 +718,12 @@ class AdminHomePage extends StatelessWidget {
 
                                                 child: RaisedButton(
                                                   onPressed: () {
-                                                    BlocProvider.of<AdminHomeBloc>(context).add(AssignPointsToPlayerEvent(state.fetchPlayers[index]
+                                                    BlocProvider.of<
+                                                                AdminHomeBloc>(
+                                                            context)
+                                                        .add(
+                                                            AssignPointsToPlayerEvent(
+                                                      state.fetchPlayers[index]
                                                           .fields.id
                                                           .toString(),
                                                       textFieldControllers[
@@ -780,7 +792,7 @@ class AdminHomePage extends StatelessWidget {
                     return LoadingIndicator();
                   } else if (state is AssignPointsToPlayerLoaded) {
                     return LoadingIndicator();
-                  }  else if (state is IndLearningLoading) {
+                  } else if (state is IndLearningLoading) {
                     return LoadingIndicator();
                   } else if (state is IndLearningLoaded) {
                     return WillPopScope(
@@ -800,7 +812,7 @@ class AdminHomePage extends StatelessWidget {
                           ),
 
                           Container(
-                            //  margin: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.1, 10, MediaQuery.of(context).size.width * 0.1, 0),
+                              //  margin: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.1, 10, MediaQuery.of(context).size.width * 0.1, 0),
                               margin: EdgeInsets.fromLTRB(
                                   MediaQuery.of(context).size.width * 0.1,
                                   MediaQuery.of(context).size.height * 0.2,
@@ -820,47 +832,50 @@ class AdminHomePage extends StatelessWidget {
                                   return InkWell(
                                     onTap: () {
                                       // BlocProvider.of<AdminHomeBloc>(context).add(IndividualLearningPlanDetail(state.fetchPlayers[index]));
-                                      BlocProvider.of<AdminHomeBloc>(context).add(IndividualLearningPlanSavedList(state.fetchPlayers[index]));
+                                      BlocProvider.of<AdminHomeBloc>(context)
+                                          .add(IndividualLearningPlanSavedList(
+                                              state.fetchPlayers[index]));
                                     },
                                     child: Container(
                                         margin: EdgeInsets.only(top: 5),
                                         decoration: BoxDecoration(
                                           border: (index % 2 == 0)
                                               ? Border.all(
-                                              color: Color(0xFFbf2431))
+                                                  color: Color(0xFFbf2431))
                                               : Border.all(
-                                              color: Color.fromRGBO(
-                                                  211, 172, 43, 1)),
+                                                  color: Color.fromRGBO(
+                                                      211, 172, 43, 1)),
                                         ),
                                         child: Padding(
                                           padding: EdgeInsets.all(20),
                                           child: Center(
                                             child: (index % 2 == 0)
                                                 ? Text(
-                                              state.fetchPlayers[index]
-                                                  .fields.name
-                                                  .toUpperCase(),
-                                              style: TextStyle(
-                                                  fontWeight:
-                                                  FontWeight.bold,
-                                                  fontFamily:
-                                                  "MontserratRegular",
-                                                  fontSize: 18,
-                                                  color: Color.fromRGBO(
-                                                      211, 172, 43, 1)),
-                                            )
+                                                    state.fetchPlayers[index]
+                                                        .fields.name
+                                                        .toUpperCase(),
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontFamily:
+                                                            "MontserratRegular",
+                                                        fontSize: 18,
+                                                        color: Color.fromRGBO(
+                                                            211, 172, 43, 1)),
+                                                  )
                                                 : Text(
-                                              state.fetchPlayers[index]
-                                                  .fields.name
-                                                  .toUpperCase(),
-                                              style: TextStyle(
-                                                  fontWeight:
-                                                  FontWeight.bold,
-                                                  fontFamily:
-                                                  "MontserratRegular",
-                                                  fontSize: 18,
-                                                  color: Color(0xFFbf2431)),
-                                            ),
+                                                    state.fetchPlayers[index]
+                                                        .fields.name
+                                                        .toUpperCase(),
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontFamily:
+                                                            "MontserratRegular",
+                                                        fontSize: 18,
+                                                        color:
+                                                            Color(0xFFbf2431)),
+                                                  ),
                                           ),
                                         )),
                                   );
@@ -883,8 +898,8 @@ class AdminHomePage extends StatelessWidget {
                                   child: Container(
                                       margin: EdgeInsets.only(
                                           left: MediaQuery.of(context)
-                                              .size
-                                              .width *
+                                                  .size
+                                                  .width *
                                               0.08),
                                       child: Text(
                                         "HOME",
@@ -900,9 +915,11 @@ class AdminHomePage extends StatelessWidget {
                         ],
                       ),
                     );
-                  }  else if (state is IndividualLearningPlanSavedListLoading) {
+                  } else if (state is IndividualLearningPlanSavedListLoading) {
                     return LoadingIndicator();
-                  } else if(state is IndividualLearningPlanSavedListLoaded) {
+                  } else if (state is IndLearningDetailLSendLoaded) {
+                    return LoadingIndicator();
+                  } else if (state is IndividualLearningPlanSavedListLoaded) {
                     return WillPopScope(
                       onWillPop: () {
                         BlocProvider.of<AdminHomeBloc>(context)
@@ -924,9 +941,13 @@ class AdminHomePage extends StatelessWidget {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: IconButton(
-                                icon: Icon(Icons.arrow_back,color: Colors.white,),
+                                icon: Icon(
+                                  Icons.arrow_back,
+                                  color: Colors.white,
+                                ),
                                 onPressed: () {
-                                  BlocProvider.of<AdminHomeBloc>(context).add(AdminHomeInitEvent());
+                                  BlocProvider.of<AdminHomeBloc>(context)
+                                      .add(AdminHomeInitEvent());
                                 },
                               ),
                             ),
@@ -938,7 +959,10 @@ class AdminHomePage extends StatelessWidget {
                                 alignment: Alignment.bottomRight,
                                 child: FloatingActionButton(
                                   onPressed: () {
-                                    newIndiPlan = new IndividualLearningModel(model: "individualLearning.individuallearning",pk: -1);
+                                    newIndiPlan = new IndividualLearningModel(
+                                        model:
+                                            "individualLearning.individuallearning",
+                                        pk: -1);
                                     newIndiPlan.fields.target = "";
                                     newIndiPlan.fields.technical = "";
                                     newIndiPlan.fields.physical = "";
@@ -946,28 +970,38 @@ class AdminHomePage extends StatelessWidget {
                                     newIndiPlan.fields.social = "";
                                     newIndiPlan.fields.tactical = "";
                                     newIndiPlan.fields.information = "";
-                                    newIndiPlan.fields.playerId = state.clickedPlayer.fields.id;
-                                    newIndiPlan.fields.name = state.clickedPlayer.fields.name;
+                                    newIndiPlan.fields.playerId =
+                                        state.clickedPlayer.fields.id;
+                                    newIndiPlan.fields.name =
+                                        state.clickedPlayer.fields.name;
                                     newIndiPlan.fields.date = "";
                                     DateTime now = DateTime.now();
-                                    String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+                                    String formattedDate =
+                                        DateFormat('yyyy-MM-dd').format(now);
                                     bool checkIfDateAlreadyPresent = false;
-                                    for(IndividualLearningModel indCheck in state.indiPlanForPlayerList) {
-                                      if(formattedDate.contains(indCheck.fields.date)) {
-                                        BlocProvider.of<AdminHomeBloc>(context).add(SnackBarEvent("Learning Plan for Today already created..!"));
-                                       // BlocProvider.of<AdminHomeBloc>(context).add(IndividualLearningPlanSavedList(state.clickedPlayer));
+                                    for (IndividualLearningModel indCheck
+                                        in state.indiPlanForPlayerList) {
+                                      if (formattedDate
+                                          .contains(indCheck.fields.date)) {
+                                        BlocProvider.of<AdminHomeBloc>(context)
+                                            .add(SnackBarEvent(
+                                                "Learning Plan for Today already created..!"));
+                                        // BlocProvider.of<AdminHomeBloc>(context).add(IndividualLearningPlanSavedList(state.clickedPlayer));
                                         checkIfDateAlreadyPresent = true;
                                       }
                                     }
-                                    if(checkIfDateAlreadyPresent == false)
-                                    BlocProvider.of<AdminHomeBloc>(context).add(IndividualLearningPlanDetail(state.clickedPlayer,newIndiPlan));
+                                    if (checkIfDateAlreadyPresent == false)
+                                      BlocProvider.of<AdminHomeBloc>(context)
+                                          .add(IndividualLearningPlanDetail(
+                                              state.clickedPlayer,
+                                              newIndiPlan));
                                   },
                                   child: Icon(Icons.add),
                                 ),
                               )),
 
                           Container(
-                            //  margin: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.1, 10, MediaQuery.of(context).size.width * 0.1, 0),
+                              //  margin: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.1, 10, MediaQuery.of(context).size.width * 0.1, 0),
                               margin: EdgeInsets.fromLTRB(
                                   MediaQuery.of(context).size.width * 0.1,
                                   MediaQuery.of(context).size.height * 0.2,
@@ -987,47 +1021,58 @@ class AdminHomePage extends StatelessWidget {
                                   return InkWell(
                                     onTap: () {
                                       // BlocProvider.of<AdminHomeBloc>(context).add(IndividualLearningPlanDetail(state.fetchPlayers[index]));
-                                      BlocProvider.of<AdminHomeBloc>(context).add(IndividualLearningPlanDetail(state.clickedPlayer,state.indiPlanForPlayerList[index]));
+                                      BlocProvider.of<AdminHomeBloc>(context)
+                                          .add(IndividualLearningPlanDetail(
+                                              state.clickedPlayer,
+                                              state.indiPlanForPlayerList[
+                                                  index]));
                                     },
                                     child: Container(
                                         margin: EdgeInsets.only(top: 5),
                                         decoration: BoxDecoration(
                                           border: (index % 2 == 0)
                                               ? Border.all(
-                                              color: Color(0xFFbf2431))
+                                                  color: Color(0xFFbf2431))
                                               : Border.all(
-                                              color: Color.fromRGBO(
-                                                  211, 172, 43, 1)),
+                                                  color: Color.fromRGBO(
+                                                      211, 172, 43, 1)),
                                         ),
                                         child: Padding(
                                           padding: EdgeInsets.all(20),
                                           child: Center(
                                             child: (index % 2 == 0)
                                                 ? Text(
-                                              state.indiPlanForPlayerList[index]
-                                                  .fields.date
-                                                  .toUpperCase(),
-                                              style: TextStyle(
-                                                  fontWeight:
-                                                  FontWeight.bold,
-                                                  fontFamily:
-                                                  "MontserratRegular",
-                                                  fontSize: 18,
-                                                  color: Color.fromRGBO(
-                                                      211, 172, 43, 1)),
-                                            )
+                                                    state
+                                                        .indiPlanForPlayerList[
+                                                            index]
+                                                        .fields
+                                                        .date
+                                                        .toUpperCase(),
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontFamily:
+                                                            "MontserratRegular",
+                                                        fontSize: 18,
+                                                        color: Color.fromRGBO(
+                                                            211, 172, 43, 1)),
+                                                  )
                                                 : Text(
-                                              state.indiPlanForPlayerList[index]
-                                                  .fields.date
-                                                  .toUpperCase(),
-                                              style: TextStyle(
-                                                  fontWeight:
-                                                  FontWeight.bold,
-                                                  fontFamily:
-                                                  "MontserratRegular",
-                                                  fontSize: 18,
-                                                  color: Color(0xFFbf2431)),
-                                            ),
+                                                    state
+                                                        .indiPlanForPlayerList[
+                                                            index]
+                                                        .fields
+                                                        .date
+                                                        .toUpperCase(),
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontFamily:
+                                                            "MontserratRegular",
+                                                        fontSize: 18,
+                                                        color:
+                                                            Color(0xFFbf2431)),
+                                                  ),
                                           ),
                                         )),
                                   );
@@ -1050,8 +1095,8 @@ class AdminHomePage extends StatelessWidget {
                                   child: Container(
                                       margin: EdgeInsets.only(
                                           left: MediaQuery.of(context)
-                                              .size
-                                              .width *
+                                                  .size
+                                                  .width *
                                               0.08),
                                       child: Text(
                                         "HOME",
@@ -1067,13 +1112,13 @@ class AdminHomePage extends StatelessWidget {
                         ],
                       ),
                     );
-                  }
-                  else if (state is IndLearningDetailLoading) {
+                  } else if (state is IndLearningDetailLoading) {
                     return LoadingIndicator();
                   } else if (state is IndLearningDetailLLoaded) {
                     return WillPopScope(
                       onWillPop: () {
-                        BlocProvider.of<AdminHomeBloc>(context).add(IndividualLearningPlan());
+                        BlocProvider.of<AdminHomeBloc>(context)
+                            .add(IndividualLearningPlan());
                       },
                       child: Stack(
                         children: [
@@ -1092,96 +1137,107 @@ class AdminHomePage extends StatelessWidget {
                             child: ListView.builder(
                                 itemCount: IndList.length,
                                 itemBuilder: (context, index) {
-                                  String desc="";
-                                  if(IndList[index].contains("TARGET")) {
-                                   // indModel.fields.target = state.indiPlanForPlayer.fields.target;
-                                    desc = state.indiPlanForPlayer.fields.target;
+                                  String desc = "";
+                                  if (IndList[index].contains("TARGET")) {
+                                    // indModel.fields.target = state.indiPlanForPlayer.fields.target;
+                                    desc =
+                                        state.indiPlanForPlayer.fields.target;
+                                  } else if (IndList[index]
+                                      .contains("TECHNICAL")) {
+                                    // indModel.fields.technical = state.indiPlanForPlayer.fields.technical;
+                                    desc = state
+                                        .indiPlanForPlayer.fields.technical;
+                                  } else if (IndList[index]
+                                      .contains("PHYSICAL")) {
+                                    //  indModel.fields.physical = state.indiPlanForPlayer.fields.physical;
+                                    desc =
+                                        state.indiPlanForPlayer.fields.physical;
+                                  } else if (IndList[index]
+                                      .contains("PSYCHOLOGICAL")) {
+                                    // indModel.fields.psychology = state.indiPlanForPlayer.fields.psychology;
+                                    desc = state
+                                        .indiPlanForPlayer.fields.psychology;
+                                  } else if (IndList[index]
+                                      .contains("SOCIAL")) {
+                                    // indModel.fields.social = state.indiPlanForPlayer.fields.social;
+                                    desc =
+                                        state.indiPlanForPlayer.fields.social;
+                                  } else if (IndList[index]
+                                      .contains("TACTICAL")) {
+                                    // indModel.fields.tactical = state.indiPlanForPlayer.fields.tactical;
+                                    desc =
+                                        state.indiPlanForPlayer.fields.tactical;
+                                  } else {
+                                    // indModel.fields.information = state.indiPlanForPlayer.fields.information;
+                                    desc = state
+                                        .indiPlanForPlayer.fields.information;
                                   }
 
-                                  else if(IndList[index].contains("TECHNICAL")) {
-                                   // indModel.fields.technical = state.indiPlanForPlayer.fields.technical;
-                                    desc = state.indiPlanForPlayer.fields.technical;
-                                  }
-
-                                  else if(IndList[index].contains("PHYSICAL")) {
-                                  //  indModel.fields.physical = state.indiPlanForPlayer.fields.physical;
-                                    desc = state.indiPlanForPlayer.fields.physical;
-                                  }
-
-                                  else if(IndList[index].contains("PSYCHOLOGICAL")) {
-                                   // indModel.fields.psychology = state.indiPlanForPlayer.fields.psychology;
-                                    desc = state.indiPlanForPlayer.fields.psychology;
-                                  }
-
-                                  else if(IndList[index].contains("SOCIAL")) {
-                                   // indModel.fields.social = state.indiPlanForPlayer.fields.social;
-                                    desc = state.indiPlanForPlayer.fields.social;
-                                  }
-
-                                  else if(IndList[index].contains("TACTICAL")) {
-                                   // indModel.fields.tactical = state.indiPlanForPlayer.fields.tactical;
-                                    desc = state.indiPlanForPlayer.fields.tactical;
-                                  }
-
-                                  else {
-                                   // indModel.fields.information = state.indiPlanForPlayer.fields.information;
-                                    desc = state.indiPlanForPlayer.fields.information;
-                                  }
-
-                                  return buildInd(IndList[index],desc,state.indiPlanForPlayer);
+                                  return buildInd(IndList[index], desc,
+                                      state.indiPlanForPlayer);
                                 }),
                           ),
-
                           Align(
                             alignment: Alignment.topLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: IconButton(
-                                icon: Icon(Icons.arrow_back,color: Colors.white,),
+                                icon: Icon(
+                                  Icons.arrow_back,
+                                  color: Colors.white,
+                                ),
                                 onPressed: () {
-                                  BlocProvider.of<AdminHomeBloc>(context).add(IndividualLearningPlanSavedList(state.clickedPlayer));
+                                  BlocProvider.of<AdminHomeBloc>(context).add(
+                                      IndividualLearningPlanSavedList(
+                                          state.clickedPlayer));
                                 },
                               ),
                             ),
                           ),
-
-
                           Align(
                             alignment: Alignment.bottomCenter,
                             child: Container(
-                              margin: EdgeInsets.only(bottom: MediaQuery.of(context).size.height * 0.03),
+                              margin: EdgeInsets.only(
+                                  bottom: MediaQuery.of(context).size.height *
+                                      0.03),
                               child: ButtonTheme(
                                 minWidth: MediaQuery.of(context).size.width *
                                     0.60, //height
-                                height:MediaQuery.of(context).size.height *
-                                    0.045 ,//
+                                height: MediaQuery.of(context).size.height *
+                                    0.045, //
                                 child: RaisedButton(
-                                  child: Text("SEND",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontFamily: "MontserratRegular",
-                                  letterSpacing: 3),
-
-                                ),
+                                    child: Text(
+                                      "SEND",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: "MontserratRegular",
+                                          letterSpacing: 3),
+                                    ),
                                     color: Color(0xFFbf2431),
                                     disabledColor:
-                                    Color.fromARGB(191, 36, 49, 1),
-                                    shape: Border.all(color: Color.fromRGBO(211, 172, 43, 1)),
+                                        Color.fromARGB(191, 36, 49, 1),
+                                    shape: Border.all(
+                                        color: Color.fromRGBO(211, 172, 43, 1)),
                                     onPressed: () {
-                                     // indModel.fields.playerId = state.clickedPlayer.fields.id;
-                                    //  indModel.fields.name = state.clickedPlayer.fields.name;
+                                      // indModel.fields.playerId = state.clickedPlayer.fields.id;
+                                      //  indModel.fields.name = state.clickedPlayer.fields.name;
 
-                                      state.indiPlanForPlayer.fields.playerId = state.clickedPlayer.fields.id;
-                                      state.indiPlanForPlayer.fields.name = state.clickedPlayer.fields.name;
-                                      BlocProvider.of<AdminHomeBloc>(context).add(IndividualLearningPlanDetailSend(state.indiPlanForPlayer));
+                                      state.indiPlanForPlayer.fields.playerId =
+                                          state.clickedPlayer.fields.id;
+                                      state.indiPlanForPlayer.fields.name =
+                                          state.clickedPlayer.fields.name;
+                                      BlocProvider.of<AdminHomeBloc>(context)
+                                          .add(IndividualLearningPlanDetailSend(
+                                              state.indiPlanForPlayer));
                                     }),
                               ),
                             ),
-
                           )
-
-
                         ],
                       ),
                     );
-                  } else if(state is IndLearningDetailSendLoading)  {
+                  } else if (state is IndLearningDetailSendLoading) {
                     return LoadingIndicator();
                   } else if (state is GetHighScoresLoading) {
                     return LoadingIndicator();
@@ -1189,7 +1245,8 @@ class AdminHomePage extends StatelessWidget {
                     List<PlayerPoints> playerPoints = state.userModels;
                     return WillPopScope(
                       onWillPop: () {
-                        BlocProvider.of<AdminHomeBloc>(context).add(AdminHomeInitEvent());
+                        BlocProvider.of<AdminHomeBloc>(context)
+                            .add(AdminHomeInitEvent());
                       },
                       child: Stack(
                         children: [
@@ -1201,7 +1258,6 @@ class AdminHomePage extends StatelessWidget {
                               ),
                             ),
                           ),
-
                           Container(
                             margin: EdgeInsets.only(
                                 top: MediaQuery.of(context).size.height * 0.15),
@@ -1218,15 +1274,15 @@ class AdminHomePage extends StatelessWidget {
                                               border: Border.all(
                                                   color: (index % 2 == 0)
                                                       ? Color.fromRGBO(
-                                                      211, 172, 43, 1)
+                                                          211, 172, 43, 1)
                                                       : Color(0xFFbf2431))),
                                           child: Row(
                                             mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                                                MainAxisAlignment.spaceBetween,
                                             children: [
                                               Padding(
                                                 padding:
-                                                const EdgeInsets.all(8.0),
+                                                    const EdgeInsets.all(8.0),
                                                 child: Text(
                                                     playerPoints[index]
                                                         .fields
@@ -1235,20 +1291,20 @@ class AdminHomePage extends StatelessWidget {
                                                     style: TextStyle(
                                                         color: (index % 2 == 0)
                                                             ? Color.fromRGBO(
-                                                            211, 172, 43, 1)
+                                                                211, 172, 43, 1)
                                                             : Color(0xFFbf2431),
                                                         fontSize: 16,
                                                         fontWeight:
-                                                        FontWeight.bold,
+                                                            FontWeight.bold,
                                                         fontFamily:
-                                                        "MontserratRegular")),
+                                                            "MontserratRegular")),
                                               ),
                                               Container(
                                                   height: 50,
                                                   width: 80,
                                                   color: (index % 2 == 0)
                                                       ? Color.fromRGBO(
-                                                      211, 172, 43, 1)
+                                                          211, 172, 43, 1)
                                                       : Color(0xFFbf2431),
                                                   child: Center(
                                                       child: Text(
@@ -1258,16 +1314,16 @@ class AdminHomePage extends StatelessWidget {
                                                           style: TextStyle(
                                                               fontSize: 15,
                                                               fontWeight:
-                                                              FontWeight.bold,
+                                                                  FontWeight
+                                                                      .bold,
                                                               fontFamily:
-                                                              "MontserratRegular")))),
+                                                                  "MontserratRegular")))),
                                             ],
                                           )),
                                     ],
                                   );
                                 }),
                           ),
-
                           Align(
                             alignment: Alignment.bottomCenter,
                             child: InkWell(
@@ -1284,8 +1340,8 @@ class AdminHomePage extends StatelessWidget {
                                   child: Container(
                                       margin: EdgeInsets.only(
                                           left: MediaQuery.of(context)
-                                              .size
-                                              .width *
+                                                  .size
+                                                  .width *
                                               0.08),
                                       child: Text(
                                         "HOME",
@@ -1362,7 +1418,10 @@ class AdminHomePage extends StatelessWidget {
                               InkWell(
                                 onTap: () {
                                   //BlocProvider.of<AdminHomeBloc>(context).add(AssignVideosEvent());
-                                  Navigator.of(context).push(new MaterialPageRoute(builder: (context) => AssignVideoPage(userModel,userRepository)));
+                                  Navigator.of(context).push(
+                                      new MaterialPageRoute(
+                                          builder: (context) => AssignVideoPage(
+                                              userModel, userRepository)));
                                 },
                                 child: Container(
                                     margin: EdgeInsets.fromLTRB(
@@ -1399,8 +1458,8 @@ class AdminHomePage extends StatelessWidget {
                             children: [
                               InkWell(
                                 onTap: () {
-                                  //    BlocProvider.of<HomeBloc>(context)
-                                  //     .add(GetHighScoreEvent());
+                                  BlocProvider.of<AdminHomeBloc>(context)
+                                      .add(GetHighScoreEvent());
                                 },
                                 child: Container(
                                   width: MediaQuery.of(context).size.width / 3,

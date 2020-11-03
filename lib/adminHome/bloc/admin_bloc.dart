@@ -82,7 +82,25 @@ class AdminHomeBloc extends Bloc<AdminHomeEvent,AdminHomeState> {
       String token = await _getToken();
       try {
         List<VideoModel> assignedPointsPlayer = await userRepository.getVideos(token);
-        List<FetchPlayersModel> fetchPlayers = await userRepository.fetchPlayersUnderAdmin(token,userModel.id.toString());
+        List<FetchPlayersModel> fetchPlayers = new List<FetchPlayersModel>();
+        if(userModel.role.contains('Super Admin')) {
+          List<UserModel> usersList = await userRepository.getAllUsers(token);
+          for(UserModel user in usersList) {
+            if (user.role.contains('Player')) {
+              FetchPlayersModel field = new FetchPlayersModel();
+            //Fields fields = new Fields();
+            field.fields.id = user.id;
+            field.fields.name = user.name.toString();
+            field.fields.points = user.points.toString();
+            field.model = 'user.user';
+            field.pk = user.id;
+
+              fetchPlayers.add(field);
+            }
+          }
+        }
+        else
+          fetchPlayers = await userRepository.fetchPlayersUnderAdmin(token,userModel.id.toString());
        this.assignedPointsPlayer = assignedPointsPlayer;
        this.fetchPlayersBloc = fetchPlayers;
         yield AssignVideosLoaded(assignedPointsPlayer,fetchPlayers);
@@ -204,7 +222,7 @@ class AdminHomeBloc extends Bloc<AdminHomeEvent,AdminHomeState> {
         if(modelForPlayer.pk == -1)
           indiPlanForPlayer = await userRepository.postIndiPlanForPlayer(token,modelForPlayer.fields.playerId.toString(),body);
         else
-          indiPlanForPlayer = await userRepository.putIndiPlanForPlayer(token,modelForPlayer.fields.playerId.toString(),body);
+          indiPlanForPlayer = await userRepository.putIndiPlanForPlayer(token,modelForPlayer.fields.id.toString(),body);
         yield IndLearningDetailLSendLoaded(userModel,indiPlanForPlayer);
         yield IndLearningLoaded(userModel,this.fetchPlayersBloc);
       } catch (error) {

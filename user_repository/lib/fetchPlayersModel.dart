@@ -4,8 +4,12 @@ class FetchPlayersModel {
   int pk;
   Fields fields;
 
-  FetchPlayersModel({this.model, this.pk, this.fields});
-
+//  FetchPlayersModel({this.model, this.pk, this.fields});
+  FetchPlayersModel({this.model, this.pk, this.fields}) {
+    this.model = "";
+    this.pk = 0;
+    this.fields = new Fields();
+  }
   FetchPlayersModel.fromJson(Map<String, dynamic> json) {
     model = json['model'];
     pk = json['pk'];
@@ -29,7 +33,11 @@ class Fields {
   String points;
   int id;
 
-  Fields({this.name, this.points, this.id});
+  Fields({this.name, this.points, this.id}) {
+    this.name ="";
+    this.points ="";
+    this.id = 0;
+  }
 
   Fields.fromJson(Map<String, dynamic> json) {
     name = json['name'];

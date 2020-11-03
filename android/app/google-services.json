@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "900854487430",
+    "firebase_url": "https://playerprouk-39c22.firebaseio.com",
+    "project_id": "playerprouk-39c22",
+    "storage_bucket": "playerprouk-39c22.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:900854487430:android:62ac25d7d7bf8d66f5f407",
+        "android_client_info": {
+          "package_name": "com.bendickson.player_pro_final"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "900854487430-0u33afnlnal1sif3gplokiblmnqhcebn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBSGpuTrPZz7eiitkTsJruzOIsmIhlJ60"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "900854487430-0u33afnlnal1sif3gplokiblmnqhcebn.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "900854487430-ipubtfrprhled7ijda9fbifq3tisldkt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.bendickson.playerProFinal"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

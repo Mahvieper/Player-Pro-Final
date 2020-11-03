@@ -5,6 +5,7 @@ import 'package:player_pro_final/authentication/authentication.dart';
 import 'package:player_pro_final/common/common.dart';
 import 'package:user_repository/fetchPlayersModel.dart';
 import 'package:user_repository/user_repository.dart';
+import 'package:video_player/video_player.dart';
 
 import 'bloc/admin_bloc.dart';
 import 'bloc/admin_state.dart';
@@ -12,51 +13,82 @@ import 'bloc/admin_state.dart';
 class AssignVideoPage extends StatefulWidget {
   final UserModel userModel;
   final UserRepository userRepository;
-  AssignVideoPage(this.userModel,this.userRepository);
+  AssignVideoPage(this.userModel, this.userRepository);
   @override
   _AssignVideoPageState createState() => _AssignVideoPageState();
 }
 
 class _AssignVideoPageState extends State<AssignVideoPage> {
   List<bool> isSelected = [];
-
+  final ScrollController _scrollController = ScrollController();
   String videoUrl;
   VideoModel videoModel;
-
+  VideoPlayerController _videoPlayerController;
   String playerClickedCheckColor = "";
   FetchPlayersModel playerClicked;
 
   int prevIndex;
+
+  showAlertDialog(BuildContext context,String videoTitle,VideoPlayerController videoPlayerController) {
+
+    // set up the button
+    Widget okButton = FlatButton(
+      child: Text("OK"),
+      onPressed: () {
+        videoPlayerController.pause();
+        Navigator.of(context).pop(); },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text(videoTitle),
+      content: ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: VideoPlayer(videoPlayerController)
+      ),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         body: BlocProvider(
-            create: (context) {
-              return AdminHomeBloc(
-                userModel: widget.userModel,
-                authenticationBloc: BlocProvider.of<AuthenticationBloc>(context),
-                userRepository: widget.userRepository,
-              )..add(AssignVideosEvent());
-            },
+          create: (context) {
+            return AdminHomeBloc(
+              userModel: widget.userModel,
+              authenticationBloc: BlocProvider.of<AuthenticationBloc>(context),
+              userRepository: widget.userRepository,
+            )..add(AssignVideosEvent());
+          },
           child: BlocListener<AdminHomeBloc, AdminHomeState>(
-            listener: (context,state) {
-              if(state is AssignVideosError) {
+            listener: (context, state) {
+              if (state is AssignVideosError) {
                 Scaffold.of(context).showSnackBar(
                   SnackBar(
                     content: Text(state.error),
                     backgroundColor: Colors.red,
                   ),
                 );
-              } else if(state is AssignVideosToPlayerLoaded) {
+              } else if (state is AssignVideosToPlayerLoaded) {
                 Scaffold.of(context).showSnackBar(
                   SnackBar(
                     content: Text("Player Assigned with the Video"),
                     backgroundColor: Colors.red,
                   ),
                 );
-              } else if(state is AssignPointsToPlayerError) {
+              } else if (state is AssignPointsToPlayerError) {
                 Scaffold.of(context).showSnackBar(
                   SnackBar(
                     content: Text(state.error.toString()),
@@ -66,13 +98,13 @@ class _AssignVideoPageState extends State<AssignVideoPage> {
               }
             },
             child: BlocBuilder<AdminHomeBloc, AdminHomeState>(
-              builder: (context,state) {
-                if(state is AssignVideosLoading) {
+              builder: (context, state) {
+                if (state is AssignVideosLoading) {
                   return LoadingIndicator();
-                } else if(state is AssignVideosLoaded) {
+                } else if (state is AssignVideosLoaded) {
                   return WillPopScope(
                     onWillPop: () {
-                     // Navigator.of(context).pop();
+                      // Navigator.of(context).pop();
                     },
                     child: Stack(
                       children: [
@@ -86,7 +118,7 @@ class _AssignVideoPageState extends State<AssignVideoPage> {
                         ),
 
                         Container(
-                          //  margin: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.1, 10, MediaQuery.of(context).size.width * 0.1, 0),
+                            //  margin: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width * 0.1, 10, MediaQuery.of(context).size.width * 0.1, 0),
                             margin: EdgeInsets.fromLTRB(
                                 MediaQuery.of(context).size.width * 0.1,
                                 MediaQuery.of(context).size.height * 0.2,
@@ -95,6 +127,7 @@ class _AssignVideoPageState extends State<AssignVideoPage> {
                             child: Image.asset("assets/MyPlayersTitle.png")),
                         //Show List of Players Under the Admin.
                         Container(
+                          height: MediaQuery.of(context).size.height * 0.6,
                           margin: EdgeInsets.fromLTRB(
                               MediaQuery.of(context).size.width * 0.1,
                               MediaQuery.of(context).size.height * 0.28,
@@ -102,154 +135,267 @@ class _AssignVideoPageState extends State<AssignVideoPage> {
                               0),
                           child: ListView.builder(
                               itemCount: state.fetchPlayers.length,
+                              shrinkWrap: true,
+                              controller: _scrollController,
                               itemBuilder: (context, index) {
                                 int clickedPlayerId = index;
-                                return Container(
-                                  margin: EdgeInsets.only(top: 5),
-                                  decoration: BoxDecoration(
-                                    border: index % 2 ==0 ? Border.all(color: Color(0xFFbf2431)) : Border.all(color: Color.fromRGBO(211, 172, 43, 1)),
-                                    color: Color.fromRGBO(43, 43, 43, 1)
-                                  ),
-                                  child: ExpansionTile(
-                                    title: Center(
-                                      child: Text( state.fetchPlayers[index]
-                                          .fields.name.toUpperCase(),
-                                          style: TextStyle(
-                                              fontWeight:
-                                              FontWeight.bold,
-                                              fontFamily:
-                                              "MontserratRegular",
-                                              fontSize: 18,
+                                return SingleChildScrollView(
+                                  child: Container(
+                                    margin: EdgeInsets.only(top: 5),
+                                    decoration: BoxDecoration(
+                                        border: index % 2 == 0
+                                            ? Border.all(
+                                                color: Color(0xFFbf2431))
+                                            : Border.all(
+                                                color: Color.fromRGBO(
+                                                    211, 172, 43, 1)),
+                                        color: Color.fromRGBO(43, 43, 43, 1)),
+                                    child: ExpansionTile(
+                                      title: Center(
+                                        child: Text(
+                                            state
+                                                .fetchPlayers[index].fields.name
+                                                .toUpperCase(),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontFamily: "MontserratRegular",
+                                                fontSize: 18,
+                                                color: Color.fromRGBO(
+                                                    211, 172, 43, 1))),
+                                      ),
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
                                               color: Color.fromRGBO(
-                                                  211, 172, 43, 1))),
-                                    ),
-
-                                    children: [
-                                      Container(
-                                        decoration: BoxDecoration(
-                                            color: Color.fromRGBO(58, 58, 58, 1)
-                                        ),
-                                        child: Wrap(
-                                          children : [
-                                            Column(
-                                              children: [
-                                                ListView.builder(
-                                                  scrollDirection: Axis.vertical,
+                                                  58, 58, 58, 1)),
+                                          child: Column(
+                                            children: [
+                                              Container(
+                                                height: MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.3,
+                                                child: ListView.builder(
+                                                  scrollDirection:
+                                                      Axis.vertical,
                                                   shrinkWrap: true,
-                                                  itemCount: state.videosList.length,
-                                                  itemBuilder: (context,index) {
-                                                    for (var i = 0; i < state.fetchPlayers.length; i++) {
+                                                  itemCount:
+                                                      state.videosList.length,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    for (var i = 0;
+                                                        i <
+                                                            state.fetchPlayers
+                                                                .length;
+                                                        i++) {
                                                       isSelected.add(false);
                                                     }
                                                     return Container(
-                                                      color: state.fetchPlayers[clickedPlayerId].fields.name.contains(playerClickedCheckColor) && isSelected[index] ? Color.fromRGBO(211, 172, 43, 1) : Color.fromRGBO(58, 58, 58, 1) ,
+                                                      color: state
+                                                                  .fetchPlayers[
+                                                                      clickedPlayerId]
+                                                                  .fields
+                                                                  .name
+                                                                  .contains(
+                                                                      playerClickedCheckColor) &&
+                                                              isSelected[index]
+                                                          ? Color.fromRGBO(
+                                                              211, 172, 43, 1)
+                                                          : Color.fromRGBO(
+                                                              58, 58, 58, 1),
                                                       child: ListTile(
                                                         onTap: () {
                                                           setState(() {
-                                                            isSelected[index] = !isSelected[index];
-                                                            if(prevIndex !=null && prevIndex != index)
-                                                              isSelected[prevIndex] = false;
+                                                            isSelected[index] =
+                                                                !isSelected[
+                                                                    index];
+                                                            if (prevIndex !=
+                                                                    null &&
+                                                                prevIndex !=
+                                                                    index)
+                                                              isSelected[
+                                                                      prevIndex] =
+                                                                  false;
 
-                                                            if(isSelected[index]) {
+                                                            if (isSelected[
+                                                                index]) {
                                                               prevIndex = index;
-                                                              playerClicked = state.fetchPlayers[clickedPlayerId];
-                                                              videoUrl = state.videosList[index].videoLink;
-                                                              videoModel = new VideoModel();
-                                                              videoModel = state.videosList[index];
+                                                              playerClicked = state
+                                                                      .fetchPlayers[
+                                                                  clickedPlayerId];
+                                                              videoUrl = state
+                                                                  .videosList[
+                                                                      index]
+                                                                  .videoLink;
+                                                              videoModel =
+                                                                  new VideoModel();
+                                                              videoModel = state
+                                                                      .videosList[
+                                                                  index];
                                                             } else {
-                                                              isSelected[index] = false;
-                                                              playerClicked = null;
+                                                              isSelected[
+                                                                      index] =
+                                                                  false;
+                                                              playerClicked =
+                                                                  null;
                                                               videoUrl = null;
                                                               videoModel = null;
                                                             }
-                                                          //  clickedPlayerId = null;
-                                                            playerClickedCheckColor = state.fetchPlayers[clickedPlayerId].fields.name;
+                                                            //  clickedPlayerId = null;
+                                                            playerClickedCheckColor = state
+                                                                .fetchPlayers[
+                                                                    clickedPlayerId]
+                                                                .fields
+                                                                .name;
+
+                                                            _videoPlayerController = VideoPlayerController.network( state
+                                                                .videosList[
+                                                            index]
+                                                                .videoLink)
+                                                              ..initialize().then((_) {
+                                                                setState(() {});
+                                                                _videoPlayerController.play();
+                                                                Future.delayed(new Duration(seconds: 1));
+                                                              });
+
+                                                        showAlertDialog(context,state.videosList[index].name,_videoPlayerController);
                                                           });
                                                         },
-                                                        title: Center(child: Row(
-                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                        title: Center(
+                                                            child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
                                                           children: [
-                                                            Text(state.videosList[index].name.toUpperCase(),style: TextStyle(fontWeight: FontWeight.bold, fontFamily: "MontserratRegular",color: Color(0xFFbf2431)),),
-                                                            SizedBox(width: 8,),
-                                                            state.fetchPlayers[clickedPlayerId].fields.name.contains(playerClickedCheckColor) && isSelected[index] ? Icon(Icons.done) : Container(),
+                                                            Text(
+                                                              state
+                                                                  .videosList[
+                                                                      index]
+                                                                  .name
+                                                                  .toUpperCase(),
+                                                              style: TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  fontFamily:
+                                                                      "MontserratRegular",
+                                                                  color: Color(
+                                                                      0xFFbf2431)),
+                                                            ),
+                                                            SizedBox(
+                                                              width: 8,
+                                                            ),
+                                                            state
+                                                                        .fetchPlayers[
+                                                                            clickedPlayerId]
+                                                                        .fields
+                                                                        .name
+                                                                        .contains(
+                                                                            playerClickedCheckColor) &&
+                                                                    isSelected[
+                                                                        index]
+                                                                ? Icon(
+                                                                    Icons.done)
+                                                                : Container(),
                                                           ],
                                                         )),
                                                       ),
                                                     );
                                                   },
                                                 ),
+                                              ),
                                               //Assign Button.
-                                                ButtonTheme(
-                                                  minWidth: MediaQuery.of(context).size.width *
-                                                  0.80, //height
-                                                  height:MediaQuery.of(context).size.height *
-                                                  0.045 ,
-                                                  disabledColor:
-                                                  Color.fromARGB(191, 36, 49, 1),
-                                                  shape: Border.all(color: Color.fromRGBO(211, 172, 43, 1)),
-                                                  child: RaisedButton(
-                                                    color: Color(0xFFbf2431),
-                                                    child:Text("ASSIGN",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontFamily: "MontserratRegular",
-                                                        letterSpacing: 3),),
-                                                    onPressed: () {
-                                                      if(playerClicked !=null && videoUrl !=null && videoModel !=null)
-                                                    BlocProvider.of<AdminHomeBloc>(context).add(AssignVideosToPlayerEvent(playerClicked,videoUrl,videoModel));
-                                                      else
-                                                    BlocProvider.of<AdminHomeBloc>(context).add(AssignVideosToPlayerErrorEvent("Please Select a Video for Assignment"));
-                                                    },
+                                              ButtonTheme(
+                                                minWidth: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.80, //height
+                                                height: MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.045,
+                                                disabledColor: Color.fromARGB(
+                                                    191, 36, 49, 1),
+                                                shape: Border.all(
+                                                    color: Color.fromRGBO(
+                                                        211, 172, 43, 1)),
+                                                child: RaisedButton(
+                                                  color: Color(0xFFbf2431),
+                                                  child: Text(
+                                                    "ASSIGN",
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontFamily:
+                                                            "MontserratRegular",
+                                                        letterSpacing: 3),
                                                   ),
-                                                )
-                                              ],
-                                            ),
-                                          ],
+                                                  onPressed: () {
+                                                    if (playerClicked != null &&
+                                                        videoUrl != null &&
+                                                        videoModel != null)
+                                                      BlocProvider.of<
+                                                                  AdminHomeBloc>(
+                                                              context)
+                                                          .add(
+                                                              AssignVideosToPlayerEvent(
+                                                                  playerClicked,
+                                                                  videoUrl,
+                                                                  videoModel));
+                                                    else
+                                                      BlocProvider.of<
+                                                                  AdminHomeBloc>(
+                                                              context)
+                                                          .add(AssignVideosToPlayerErrorEvent(
+                                                              "Please Select a Video for Assignment"));
+                                                  },
+                                                ),
+                                              )
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ],
-
+                                      ],
+                                    ),
                                   ),
                                 );
-
-
 
                                 Container(
                                     margin: EdgeInsets.only(top: 5),
                                     decoration: BoxDecoration(
                                       border: (index % 2 == 0)
-                                          ? Border.all(
-                                          color: Color(0xFFbf2431))
+                                          ? Border.all(color: Color(0xFFbf2431))
                                           : Border.all(
-                                          color: Color.fromRGBO(
-                                              211, 172, 43, 1)),
+                                              color: Color.fromRGBO(
+                                                  211, 172, 43, 1)),
                                     ),
                                     child: Padding(
                                       padding: EdgeInsets.all(20),
                                       child: Center(
                                         child: (index % 2 == 0)
                                             ? Text(
-                                          state.fetchPlayers[index]
-                                              .fields.name
-                                              .toUpperCase(),
-                                          style: TextStyle(
-                                              fontWeight:
-                                              FontWeight.bold,
-                                              fontFamily:
-                                              "MontserratRegular",
-                                              fontSize: 18,
-                                              color: Color.fromRGBO(
-                                                  211, 172, 43, 1)),
-                                        )
+                                                state.fetchPlayers[index].fields
+                                                    .name
+                                                    .toUpperCase(),
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontFamily:
+                                                        "MontserratRegular",
+                                                    fontSize: 18,
+                                                    color: Color.fromRGBO(
+                                                        211, 172, 43, 1)),
+                                              )
                                             : Text(
-                                          state.fetchPlayers[index]
-                                              .fields.name
-                                              .toUpperCase(),
-                                          style: TextStyle(
-                                              fontWeight:
-                                              FontWeight.bold,
-                                              fontFamily:
-                                              "MontserratRegular",
-                                              fontSize: 18,
-                                              color: Color(0xFFbf2431)),
-                                        ),
+                                                state.fetchPlayers[index].fields
+                                                    .name
+                                                    .toUpperCase(),
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontFamily:
+                                                        "MontserratRegular",
+                                                    fontSize: 18,
+                                                    color: Color(0xFFbf2431)),
+                                              ),
                                       ),
                                     ));
                               }),
@@ -259,8 +405,8 @@ class _AssignVideoPageState extends State<AssignVideoPage> {
                           alignment: Alignment.bottomCenter,
                           child: InkWell(
                             onTap: () {
-                            //  BlocProvider.of<AdminHomeBloc>(context)
-                                // .add(AdminHomeInitEvent());
+                              //  BlocProvider.of<AdminHomeBloc>(context)
+                              // .add(AdminHomeInitEvent());
                               Navigator.pop(context);
                             },
                             child: Container(
@@ -271,10 +417,9 @@ class _AssignVideoPageState extends State<AssignVideoPage> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: Container(
                                     margin: EdgeInsets.only(
-                                        left: MediaQuery.of(context)
-                                            .size
-                                            .width *
-                                            0.08),
+                                        left:
+                                            MediaQuery.of(context).size.width *
+                                                0.08),
                                     child: Text(
                                       "HOME",
                                       style: TextStyle(
@@ -289,7 +434,7 @@ class _AssignVideoPageState extends State<AssignVideoPage> {
                       ],
                     ),
                   );
-                }  else
+                } else
                   return LoadingIndicator();
               },
             ),

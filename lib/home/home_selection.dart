@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:player_pro_final/home/home.dart';
 import 'package:player_pro_final/model/model.dart';
 import 'package:player_pro_final/superAdminHome/super_admin_home_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:user_repository/user_repository.dart';
 
 import '../adminHome/admin_home_page.dart';
@@ -20,9 +23,11 @@ class _HomeSelectionState extends State<HomeSelection> {
 
   String _homeScreenText = "Waiting for token...";
   String _messageText = "Waiting for message...";
+  String userDeviceToken= "";
+  String loginToken = "";
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   @override
-  void initState() {
+  Future<void> initState() {
     // TODO: implement initState
     super.initState();
     _firebaseMessaging.configure(
@@ -53,12 +58,45 @@ class _HomeSelectionState extends State<HomeSelection> {
     });
     _firebaseMessaging.getToken().then((String token) {
       assert(token != null);
+      getLoginToken();
       setState(() {
+        userDeviceToken = token;
+        print("Device Token : "+token);
+        Map data;
+        data = {
+          "userDeviceRegId" : userDeviceToken,
+        };
+        var body = json.encode(data);
+        Future.delayed(const Duration(seconds: 2),() {
+           updateUser(loginToken,widget.userModel.id.toString(),body);
+        });
         _homeScreenText = "Push Messaging token: $token";
       });
       print(_homeScreenText);
     });
 
+
+
+  }
+
+  updateUser(String LoginToken,userId,body) async {
+    UserModel user  =   await widget.userRepository.updateUser(LoginToken, userId, body);
+    return user;
+  }
+
+  getLoginToken() async {
+    String token = await _getToken();
+    loginToken = token;
+  }
+
+  Future<String> _getToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = "";
+    token = prefs.getString('token');
+    if( token == null || token.isEmpty) {
+      token = await prefs.getString('token');
+    }
+    return token;
   }
 
   @override

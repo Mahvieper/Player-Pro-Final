@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
 import 'package:user_repository/fetchPlayersModel.dart';
 import 'package:user_repository/IndividualPlayersModel.dart';
+import 'package:user_repository/user_repository.dart';
 
 class UserRepository {
   Future<String> authenticate({
@@ -273,7 +274,7 @@ class UserRepository {
   }
 
   Future<List<FetchPlayersModel>> fetchPlayersUnderAdmin(String token,String adminId) async {
-    var url = 'https://akyproplayer.herokuapp.com/playerunderadmin/' + adminId + '/';
+    var url = 'https://akyproplayer.herokuapp.com/playerunderadmin/'+ adminId + '/';
     print("Token Header " + token);
     var response = await http.get(url,
       headers: {"Authorization" : "Token "+token},
@@ -319,6 +320,53 @@ class UserRepository {
     return user;
   }
 
+  Future<VideoModel> postPracticeVideo(String token,String playerId,var body) async {
+    var url = 'https://akyproplayer.herokuapp.com/assignment/';
+    print("Token Header " + token);
+
+    var response = await http.post(url,
+      headers: {"Authorization" : "Token "+token,
+        "Content-Type": "application/json"},
+      body : body,
+    );
+
+
+    print("${response.statusCode}");
+    print("${response.body}");
+
+    if(response.statusCode != 201) {
+      throw Exception();
+    }
+
+    final parsed = json.decode(response.body);
+    VideoModel video = VideoModel.fromJson(parsed);
+
+    return video;
+  }
+
+  Future<ShoppingItemModel> postGoodies(String token,String playerId,var body) async {
+    var url = 'https://akyproplayer.herokuapp.com/goodies/';
+    print("Token Header " + token);
+
+    var response = await http.post(url,
+      headers: {"Authorization" : "Token "+token,
+        "Content-Type": "application/json"},
+      body : body,
+    );
+
+
+    print("${response.statusCode}");
+    print("${response.body}");
+
+    if(response.statusCode != 201) {
+      throw Exception();
+    }
+
+    final parsed = json.decode(response.body);
+    ShoppingItemModel goodie = ShoppingItemModel.fromJson(parsed);
+
+    return goodie;
+  }
 
   Future<UserModel> createUser(String token,var body) async {
     var url = 'https://akyproplayer.herokuapp.com/create/';
@@ -423,6 +471,52 @@ class UserRepository {
   }
 
 
+
+  Future<List<PurchasedModel>> getGoodiesRequests(String token) async {
+    var url = 'https://akyproplayer.herokuapp.com/redeem/';
+    print("Token Header " + token);
+    var response = await http.get(url,
+      headers: {"Authorization" : "Token "+token},
+    );
+    print("${response.statusCode}");
+    print("${response.body}");
+
+    if(response.statusCode != 200) {
+      throw Exception();
+    }
+
+    final parsed = json.decode(response.body) as List;
+    List<PurchasedModel> shoppingItemsList = new List<PurchasedModel>();
+
+    for(Map i in parsed){
+      shoppingItemsList.add(PurchasedModel.fromJson(i));
+    }
+
+    return shoppingItemsList;
+  }
+
+
+  Future<PurchasedModel> updateGoodiesRequest(String token,String requestId,var body) async {
+    var url = 'https://akyproplayer.herokuapp.com/redeem/' + requestId + '/';
+    print("Token Header " + token);
+    var response = await http.put(url,
+      headers: {"Authorization" : "Token "+token,
+        "Content-Type": "application/json"},
+      body: body
+    );
+    print("${response.statusCode}");
+    print("${response.body}");
+
+    if(response.statusCode != 201) {
+      throw Exception();
+    }
+
+    final parsed = json.decode(response.body);
+    PurchasedModel shoppingItem = new PurchasedModel.fromJson(parsed);
+
+    return shoppingItem;
+  }
+
   Future<PurchasedModel> makePurchase(String token,var body) async {
     var url = 'https://akyproplayer.herokuapp.com/redeem/';
     print("Token Header " + token);
@@ -481,7 +575,24 @@ class UserRepository {
     }
 
     final parsed = json.decode(response.body);
-    IndividualLearningModel individualLearningModel = IndividualLearningModel.fromJson(parsed);
+    IndividualLearningModel individualLearningModel =
+    //IndividualLearningModel.fromJson(parsed);
+
+    new IndividualLearningModel(model: "individualLearning.individuallearning",
+    pk:parsed['id']);
+    individualLearningModel.pk = parsed['id'];
+    individualLearningModel.model = "individualLearning.individuallearning";
+    individualLearningModel.fields.target = parsed['Target'];
+    individualLearningModel.fields.technical = parsed['Technical'];
+    individualLearningModel.fields.physical = parsed['Physical'];
+    individualLearningModel.fields.psychology = parsed['Psychology'];
+    individualLearningModel.fields.social = parsed['Social'];
+    individualLearningModel.fields.tactical = parsed['Tactical'];
+    individualLearningModel.fields.information = parsed['Information'];
+    individualLearningModel.fields.playerId =parsed['playerId'];
+    individualLearningModel.fields.name =parsed['Name'];
+    individualLearningModel.fields.date =parsed['date'];
+    individualLearningModel.fields.id =parsed['id'];
 
     return individualLearningModel;
   }
@@ -530,6 +641,32 @@ class UserRepository {
       if(UserModel.fromJson(i).role.contains("Super"))
         continue;
       allUsersList.add(UserModel.fromJson(i));
+    }
+
+    return allUsersList;
+  }
+
+
+  Future<List<FetchPlayersModel>> getAllUsersUnderSuperAdmin(String token) async {
+    var url = 'https://akyproplayer.herokuapp.com/users/';
+    print("Token Header " + token);
+    var response = await http.get(url,
+      headers: {"Authorization" : "Token "+token},
+    );
+    print("${response.statusCode}");
+    print("${response.body}");
+
+    if(response.statusCode != 200) {
+      throw Exception();
+    }
+
+    final parsed = json.decode(response.body) as List;
+    List<FetchPlayersModel> allUsersList = new List<FetchPlayersModel>();
+
+    for(Map i in parsed){
+      if(UserModel.fromJson(i).role.contains("Super"))
+        continue;
+      allUsersList.add(FetchPlayersModel.fromJson(i));
     }
 
     return allUsersList;
@@ -853,7 +990,7 @@ class PurchasedModel {
   String goodiesName;
   String goodiesId;
   String dateRaised;
-
+  String status;
   PurchasedModel(
       {this.id,
         this.userName,
@@ -861,7 +998,8 @@ class PurchasedModel {
         this.points,
         this.goodiesName,
         this.goodiesId,
-        this.dateRaised});
+        this.dateRaised,
+      this.status});
 
   PurchasedModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -871,6 +1009,7 @@ class PurchasedModel {
     goodiesName = json['goodiesName'];
     goodiesId = json['goodiesId'];
     dateRaised = json['dateRaised'];
+    status = json['status'];
   }
 
   Map<String, dynamic> toJson() {
@@ -882,6 +1021,7 @@ class PurchasedModel {
     data['goodiesName'] = this.goodiesName;
     data['goodiesId'] = this.goodiesId;
     data['dateRaised'] = this.dateRaised;
+    data['status'] = this.status;
     return data;
   }
 }
